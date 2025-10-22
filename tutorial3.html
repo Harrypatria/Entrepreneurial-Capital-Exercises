@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial 3: Balance Sheet & Accounting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --asset: #3b82f6;
+            --liability: #ef4444;
+            --equity: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover {
+            background: var(--surface-light);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-description {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+        }
+
+        /* Balance Sheet Visual */
+        .balance-sheet {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .bs-column {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+
+        .bs-header {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bs-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .bs-section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .bs-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.25rem;
+            background: var(--surface-light);
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .bs-item:hover {
+            transform: translateX(4px);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .bs-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            margin-top: 1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        /* T-Account */
+        .t-account {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .t-account-title {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        .t-account-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 200px;
+        }
+
+        .t-side {
+            padding: 1rem;
+            position: relative;
+        }
+
+        .t-side-left {
+            border-right: 2px solid var(--border);
+        }
+
+        .t-side-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .t-entry {
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: var(--surface-light);
+            border-radius: 0.375rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Classification Cards */
+        .classification-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .class-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .class-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+
+        .class-card.ca {
+            border-color: var(--asset);
+        }
+
+        .class-card.nca {
+            border-color: #0ea5e9;
+        }
+
+        .class-card.cl {
+            border-color: var(--danger);
+        }
+
+        .class-card.ncl {
+            border-color: #dc2626;
+        }
+
+        .class-card.equity {
+            border-color: var(--success);
+        }
+
+        .class-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .class-badge.ca {
+            background: var(--asset);
+            color: white;
+        }
+
+        .class-badge.nca {
+            background: #0ea5e9;
+            color: white;
+        }
+
+        .class-badge.cl {
+            background: var(--danger);
+            color: white;
+        }
+
+        .class-badge.ncl {
+            background: #dc2626;
+            color: white;
+        }
+
+        .class-badge.equity {
+            background: var(--success);
+            color: white;
+        }
+
+        .class-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .class-amount {
+            color: var(--text-muted);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Accordion */
+        .accordion-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .accordion-header:hover {
+            background: var(--surface-light);
+        }
+
+        .accordion-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .accordion-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .accordion-toggle {
+            transition: transform 0.3s;
+            color: var(--text-muted);
+        }
+
+        .accordion-item.active .accordion-toggle {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 3000px;
+        }
+
+        .accordion-body {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Formula Box */
+        .formula-box {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid var(--primary);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.125rem;
+        }
+
+        .visual-calc {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+
+        .visual-box {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            background: var(--surface-light);
+            border: 2px solid var(--border);
+        }
+
+        .visual-operator {
+            color: var(--secondary);
+            font-size: 1.5rem;
+        }
+
+        .visual-result {
+            padding: 0.75rem 1.25rem;
+            background: var(--success);
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 700;
+        }
+
+        /* Interactive Elements */
+        .interactive-item {
+            background: var(--surface-light);
+            border: 2px dashed var(--border);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .interactive-item:hover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .interactive-item.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            border-style: solid;
+        }
+
+        .highlight {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+        }
+
+        .info-box {
+            padding: 1.5rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid var(--secondary);
+            border-radius: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .success-box {
+            padding: 1.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--success);
+            border-radius: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box {
+            padding: 1.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid var(--warning);
+            border-radius: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        /* Tabs */
+        .tabs {
+            margin-bottom: 2rem;
+        }
+
+        .tab-list {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: var(--text);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .balance-sheet {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            .classification-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .equation-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+            background: var(--surface);
+            border-radius: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .equation-part {
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-align: center;
+        }
+
+        .equation-assets {
+            background: linear-gradient(135deg, var(--asset), #0ea5e9);
+            color: white;
+        }
+
+        .equation-liabilities {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+
+        .equation-equity {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .step-indicator {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Tutorial 3</div>
+                <div class="sidebar-subtitle">Balance Sheet & Accounting</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Core Concepts</div>
+                <div class="nav-item active" data-section="classification">
+                    <div class="nav-icon">🏷️</div>
+                    <span>Account Classification</span>
+                </div>
+                <div class="nav-item" data-section="equation">
+                    <div class="nav-icon">⚖️</div>
+                    <span>Accounting Equation</span>
+                </div>
+                <div class="nav-item" data-section="debit-credit">
+                    <div class="nav-icon">💱</div>
+                    <span>Debits & Credits</span>
+                </div>
+                <div class="nav-item" data-section="balance-sheet">
+                    <div class="nav-icon">📊</div>
+                    <span>Balance Sheet Structure</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Practice Scenarios</div>
+                <div class="nav-item" data-section="scenario1">
+                    <div class="nav-icon">🏢</div>
+                    <span>Alpha Consulting</span>
+                </div>
+                <div class="nav-item" data-section="scenario2">
+                    <div class="nav-icon">📦</div>
+                    <span>ShipFast E-Commerce</span>
+                </div>
+                <div class="nav-item" data-section="mcq">
+                    <div class="nav-icon">❓</div>
+                    <span>Multiple Choice Q&A</span>
+                </div>
+                <div class="nav-item" data-section="homework">
+                    <div class="nav-icon">📝</div>
+                    <span>Homework: GreenTech</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Classification Section -->
+            <section class="content-section active" id="classification">
+                <div class="page-header">
+                    <h1 class="page-title">Account Classification</h1>
+                    <p class="page-description">Understanding the 5 categories of accounts</p>
+                </div>
+
+                <div class="info-box">
+                    <strong style="display: block; margin-bottom: 0.5rem; color: var(--secondary);">The 5 Classifications:</strong>
+                    <div style="display: grid; gap: 0.5rem; margin-top: 1rem;">
+                        <div><strong>CA</strong> = Current Asset (convertible to cash within 1 year)</div>
+                        <div><strong>NCA</strong> = Non-Current Asset (long-term, used beyond 1 year)</div>
+                        <div><strong>CL</strong> = Current Liability (due within 1 year)</div>
+                        <div><strong>NCL</strong> = Non-Current Liability (due beyond 1 year)</div>
+                        <div><strong>E</strong> = Equity (owner's stake in the business)</div>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab-list">
+                        <button class="tab-button active" data-tab="assets-tab">Assets</button>
+                        <button class="tab-button" data-tab="liabilities-tab">Liabilities</button>
+                        <button class="tab-button" data-tab="equity-tab">Equity</button>
+                    </div>
+
+                    <div class="tab-content active" id="assets-tab">
+                        <h3 style="margin-bottom: 1.5rem;">Assets: What the Company Owns</h3>
+                        
+                        <div class="accordion-item active">
+                            <div class="accordion-header">
+                                <div class="accordion-title">
+                                    <div class="accordion-icon">CA</div>
+                                    Current Assets
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p style="margin-bottom: 1rem;">Assets expected to be converted to cash or used within one year.</p>
+                                    
+                                    <div class="classification-grid">
+                                        <div class="class-card ca">
+                                            <div class="class-badge ca">CA</div>
+                                            <div class="class-name">Cash at Bank</div>
+                                            <div class="class-amount">Most liquid asset</div>
+                                        </div>
+                                        <div class="class-card ca">
+                                            <div class="class-badge ca">CA</div>
+                                            <div class="class-name">Accounts Receivable</div>
+                                            <div class="class-amount">Money owed by customers</div>
+                                        </div>
+                                        <div class="class-card ca">
+                                            <div class="class-badge ca">CA</div>
+                                            <div class="class-name">Inventory</div>
+                                            <div class="class-amount">Goods for sale</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="warning-box">
+                                        <strong>Key Point:</strong> Current assets are listed in order of liquidity (how quickly they can be converted to cash).
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <div class="accordion-title">
+                                    <div class="accordion-icon">NCA</div>
+                                    Non-Current Assets
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p style="margin-bottom: 1rem;">Long-term assets used in operations, not expected to be converted to cash within one year.</p>
+                                    
+                                    <div class="classification-grid">
+                                        <div class="class-card nca">
+                                            <div class="class-badge nca">NCA</div>
+                                            <div class="class-name">Land and Buildings</div>
+                                            <div class="class-amount">Property owned</div>
+                                        </div>
+                                        <div class="class-card nca">
+                                            <div class="class-badge nca">NCA</div>
+                                            <div class="class-name">Equipment</div>
+                                            <div class="class-amount">Machinery, furniture, computers</div>
+                                        </div>
+                                        <div class="class-card nca">
+                                            <div class="class-badge nca">NCA</div>
+                                            <div class="class-name">Vehicles</div>
+                                            <div class="class-amount">Company cars, trucks</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <strong>Remember:</strong> Non-current assets are typically depreciated over their useful life.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="liabilities-tab">
+                        <h3 style="margin-bottom: 1.5rem;">Liabilities: What the Company Owes</h3>
+                        
+                        <div class="accordion-item active">
+                            <div class="accordion-header">
+                                <div class="accordion-title">
+                                    <div class="accordion-icon">CL</div>
+                                    Current Liabilities
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p style="margin-bottom: 1rem;">Obligations due within one year.</p>
+                                    
+                                    <div class="classification-grid">
+                                        <div class="class-card cl">
+                                            <div class="class-badge cl">CL</div>
+                                            <div class="class-name">Accounts Payable</div>
+                                            <div class="class-amount">Money owed to suppliers</div>
+                                        </div>
+                                        <div class="class-card cl">
+                                            <div class="class-badge cl">CL</div>
+                                            <div class="class-name">Short-Term Loan</div>
+                                            <div class="class-amount">Due within 6-12 months</div>
+                                        </div>
+                                        <div class="class-card cl">
+                                            <div class="class-badge cl">CL</div>
+                                            <div class="class-name">Taxes Payable</div>
+                                            <div class="class-amount">Tax obligations due soon</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="warning-box">
+                                        <strong>Critical:</strong> Current liabilities must be paid within 1 year using current assets.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <div class="accordion-title">
+                                    <div class="accordion-icon">NCL</div>
+                                    Non-Current Liabilities
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p style="margin-bottom: 1rem;">Obligations due beyond one year.</p>
+                                    
+                                    <div class="classification-grid">
+                                        <div class="class-card ncl">
+                                            <div class="class-badge ncl">NCL</div>
+                                            <div class="class-name">Long-Term Bank Loan</div>
+                                            <div class="class-amount">Due in 5+ years</div>
+                                        </div>
+                                        <div class="class-card ncl">
+                                            <div class="class-badge ncl">NCL</div>
+                                            <div class="class-name">Mortgage Payable</div>
+                                            <div class="class-amount">Property loan</div>
+                                        </div>
+                                        <div class="class-card ncl">
+                                            <div class="class-badge ncl">NCL</div>
+                                            <div class="class-name">Deferred Tax Liabilities</div>
+                                            <div class="class-amount">Future tax obligations</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <strong>Note:</strong> Long-term financing allows businesses to invest in growth without immediate cash pressure.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="equity-tab">
+                        <h3 style="margin-bottom: 1.5rem;">Equity: Owner's Investment & Retained Profits</h3>
+                        
+                        <div class="classification-grid">
+                            <div class="class-card equity">
+                                <div class="class-badge equity">E</div>
+                                <div class="class-name">Common Stock</div>
+                                <div class="class-amount">Initial owner investment</div>
+                            </div>
+                            <div class="class-card equity">
+                                <div class="class-badge equity">E</div>
+                                <div class="class-name">Retained Earnings</div>
+                                <div class="class-amount">Accumulated profits kept in business</div>
+                            </div>
+                        </div>
+
+                        <div class="success-box">
+                            <strong>Equity Formula:</strong><br>
+                            <div class="formula-box" style="margin-top: 1rem;">
+                                Equity = Assets - Liabilities
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--text-muted);">
+                                Equity represents the owner's residual claim after all liabilities are paid.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Accounting Equation Section -->
+            <section class="content-section" id="equation">
+                <div class="page-header">
+                    <h1 class="page-title">Accounting Equation</h1>
+                    <p class="page-description">The foundation of double-entry bookkeeping</p>
+                </div>
+
+                <div class="equation-visual">
+                    <div class="equation-part equation-assets">
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Total</div>
+                        <div>ASSETS</div>
+                    </div>
+                    <div style="font-size: 2rem; color: var(--text);">=</div>
+                    <div class="equation-part equation-liabilities">
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Total</div>
+                        <div>LIABILITIES</div>
+                    </div>
+                    <div style="font-size: 2rem; color: var(--text);">+</div>
+                    <div class="equation-part equation-equity">
+                        <div style="font-size: 0.875rem; opacity: 0.9;">Total</div>
+                        <div>EQUITY</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong style="display: block; margin-bottom: 1rem;">Why This Equation ALWAYS Holds True:</strong>
+                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+                        Everything a business owns (Assets) must be financed by either:
+                    </p>
+                    <ul style="color: var(--text-muted); margin-left: 1.5rem;">
+                        <li>Borrowing (Liabilities), or</li>
+                        <li>Owner investment & retained profits (Equity)</li>
+                    </ul>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">Alternative Forms of the Equation:</h3>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">1</div>
+                            Solve for Equity
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Equity = Assets - Liabilities
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--text-muted);">
+                                <strong>Use case:</strong> When you know total assets and liabilities, calculate the owner's equity (residual value).
+                            </p>
+                            <div class="visual-calc" style="margin-top: 1.5rem;">
+                                <div class="visual-box">Assets: £118,000</div>
+                                <div class="visual-operator">−</div>
+                                <div class="visual-box">Liabilities: £42,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">Equity: £76,000</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">2</div>
+                            Solve for Liabilities
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Liabilities = Assets - Equity
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--text-muted);">
+                                <strong>Use case:</strong> When you know assets and equity, calculate total obligations.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">3</div>
+                            Solve for Assets
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Assets = Liabilities + Equity
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--text-muted);">
+                                <strong>Use case:</strong> Shows how the business is financed—by debt and owner investment.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Debits & Credits Section -->
+            <section class="content-section" id="debit-credit">
+                <div class="page-header">
+                    <h1 class="page-title">Debits & Credits</h1>
+                    <p class="page-description">The language of double-entry accounting</p>
+                </div>
+
+                <div class="warning-box">
+                    <strong>Critical Rule:</strong> Every transaction affects at least TWO accounts. For every debit, there must be an equal credit.
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">The Debit/Credit Rules by Account Type:</h3>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div style="background: var(--surface); border: 2px solid var(--asset); border-radius: 0.75rem; padding: 1.5rem;">
+                        <h4 style="color: var(--asset); margin-bottom: 1rem;">ASSETS</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div style="padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.5rem;">
+                                <strong style="color: var(--success);">↑ Debit</strong>
+                                <div style="color: var(--text-muted); font-size: 0.875rem;">Increases</div>
+                            </div>
+                            <div style="padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem;">
+                                <strong style="color: var(--danger);">↓ Credit</strong>
+                                <div style="color: var(--text-muted); font-size: 0.875rem;">Decreases</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--surface); border: 2px solid var(--danger); border-radius: 0.75rem; padding: 1.5rem;">
+                        <h4 style="color: var(--danger); margin-bottom: 1rem;">LIABILITIES</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div style="padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem;">
+                                <strong style="color: var(--danger);">↓ Debit</strong>
+                                <div style="color: var(--text-muted); font-size: 0.875rem;">Decreases</div>
+                            </div>
+                            <div style="padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;">
+                                <strong style="color: var(--success);">↑ Credit</strong>
+                                <div style="color: var(--text-muted); font-size: 0.875rem;">Increases</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--surface); border: 2px solid var(--success); border-radius: 0.75rem; padding: 1.5rem;">
+                        <h4 style="color: var(--success); margin-bottom: 1rem;">EQUITY</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div style="padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem;">
+                                <strong style="color: var(--danger);">↓ Debit</strong>
+                                <div style="color: var(--text-muted); font-size: 0.875rem;">Decreases</div>
+                            </div>
+                            <div style="padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;">
+                                <strong style="color: var(--success);">↑ Credit</strong>
+                                <div style="color: var(--text-muted); font-size: 0.875rem;">Increases</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">Visual T-Accounts:</h3>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    <div class="t-account">
+                        <div class="t-account-title" style="background: var(--asset);">Cash (Asset)</div>
+                        <div class="t-account-body">
+                            <div class="t-side t-side-left">
+                                <div class="t-side-label">Debit (Increases)</div>
+                                <div class="t-entry">
+                                    <span>+£5,000</span>
+                                </div>
+                            </div>
+                            <div class="t-side">
+                                <div class="t-side-label">Credit (Decreases)</div>
+                                <div class="t-entry">
+                                    <span>-£2,000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="t-account">
+                        <div class="t-account-title" style="background: var(--danger);">Accounts Payable (Liability)</div>
+                        <div class="t-account-body">
+                            <div class="t-side t-side-left">
+                                <div class="t-side-label">Debit (Decreases)</div>
+                                <div class="t-entry">
+                                    <span>-£2,000</span>
+                                </div>
+                            </div>
+                            <div class="t-side">
+                                <div class="t-side-label">Credit (Increases)</div>
+                                <div class="t-entry">
+                                    <span>+£5,000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <strong>Memory Aid:</strong> Think "DEAL"
+                    <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                        <li><strong>D</strong>ebit increases: <strong>E</strong>xpenses and <strong>A</strong>ssets</li>
+                        <li>Credit increases: <strong>L</strong>iabilities, equity, and revenue</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Balance Sheet Structure Section -->
+            <section class="content-section" id="balance-sheet">
+                <div class="page-header">
+                    <h1 class="page-title">Balance Sheet Structure</h1>
+                    <p class="page-description">Proper formatting and presentation</p>
+                </div>
+
+                <div class="balance-sheet">
+                    <div class="bs-column">
+                        <div class="bs-header" style="color: var(--asset);">
+                            📊 ASSETS
+                        </div>
+                        
+                        <div class="bs-section">
+                            <div class="bs-section-title">Current Assets</div>
+                            <div class="bs-item">
+                                <span>Cash at Bank</span>
+                                <span>£22,000</span>
+                            </div>
+                            <div class="bs-item">
+                                <span>Accounts Receivable</span>
+                                <span>£6,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.375rem; margin-top: 0.5rem; font-weight: 600;">
+                                <span>Total CA</span>
+                                <span>£28,000</span>
+                            </div>
+                        </div>
+
+                        <div class="bs-section">
+                            <div class="bs-section-title">Non-Current Assets</div>
+                            <div class="bs-item">
+                                <span>Land and Buildings</span>
+                                <span>£75,000</span>
+                            </div>
+                            <div class="bs-item">
+                                <span>Equipment</span>
+                                <span>£15,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.375rem; margin-top: 0.5rem; font-weight: 600;">
+                                <span>Total NCA</span>
+                                <span>£90,000</span>
+                            </div>
+                        </div>
+
+                        <div class="bs-total">
+                            <span>TOTAL ASSETS</span>
+                            <span>£118,000</span>
+                        </div>
+                    </div>
+
+                    <div class="bs-column">
+                        <div class="bs-header" style="color: var(--danger);">
+                            💳 LIABILITIES & EQUITY
+                        </div>
+                        
+                        <div class="bs-section">
+                            <div class="bs-section-title">Current Liabilities</div>
+                            <div class="bs-item">
+                                <span>Accounts Payable</span>
+                                <span>£8,000</span>
+                            </div>
+                            <div class="bs-item">
+                                <span>Short-Term Loan</span>
+                                <span>£4,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.375rem; margin-top: 0.5rem; font-weight: 600;">
+                                <span>Total CL</span>
+                                <span>£12,000</span>
+                            </div>
+                        </div>
+
+                        <div class="bs-section">
+                            <div class="bs-section-title">Non-Current Liabilities</div>
+                            <div class="bs-item">
+                                <span>Long-Term Bank Loan</span>
+                                <span>£30,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.375rem; margin-top: 0.5rem; font-weight: 600;">
+                                <span>Total NCL</span>
+                                <span>£30,000</span>
+                            </div>
+                        </div>
+
+                        <div class="bs-section">
+                            <div class="bs-section-title" style="color: var(--success);">Equity</div>
+                            <div class="bs-item">
+                                <span>Common Stock</span>
+                                <span>£66,000</span>
+                            </div>
+                            <div class="bs-item">
+                                <span>Retained Earnings</span>
+                                <span>£10,000</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.375rem; margin-top: 0.5rem; font-weight: 600;">
+                                <span>Total Equity</span>
+                                <span>£76,000</span>
+                            </div>
+                        </div>
+
+                        <div class="bs-total">
+                            <span>TOTAL L & E</span>
+                            <span>£118,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <strong>✓ Balance Sheet Balanced!</strong>
+                    <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                        Total Assets (£118,000) = Total Liabilities & Equity (£118,000)
+                    </p>
+                </div>
+            </section>
+
+            <!-- Scenario 1 Section -->
+            <section class="content-section" id="scenario1">
+                <div class="page-header">
+                    <h1 class="page-title">Scenario 1: Alpha Consulting Services</h1>
+                    <p class="page-description">Classification, equation, and balance sheet construction</p>
+                </div>
+
+                <div style="background: var(--surface); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+                    <strong>Given Information:</strong>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.5rem; margin-top: 1rem; color: var(--text-muted); font-family: 'Courier New', monospace;">
+                        <div>Accounts Payable: £8,000</div>
+                        <div>Office Furniture & Computers: £15,000</div>
+                        <div>Cash at Bank: £22,000</div>
+                        <div>Retained Earnings: £10,000</div>
+                        <div>Long-Term Bank Loan: £30,000</div>
+                        <div>Accounts Receivable: £6,000</div>
+                        <div>Short-Term Loan: £4,000</div>
+                        <div>Land and Buildings: £75,000</div>
+                        <div style="color: var(--warning);">Common Stock: <strong>To Calculate</strong></div>
+                    </div>
+                </div>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q1</div>
+                            Classify Each Account
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="classification-grid">
+                                <div class="class-card cl">
+                                    <div class="class-badge cl">CL</div>
+                                    <div class="class-name">Accounts Payable</div>
+                                    <div class="class-amount">£8,000</div>
+                                </div>
+                                <div class="class-card nca">
+                                    <div class="class-badge nca">NCA</div>
+                                    <div class="class-name">Office Furniture & Computers</div>
+                                    <div class="class-amount">£15,000</div>
+                                </div>
+                                <div class="class-card ca">
+                                    <div class="class-badge ca">CA</div>
+                                    <div class="class-name">Cash at Bank</div>
+                                    <div class="class-amount">£22,000</div>
+                                </div>
+                                <div class="class-card equity">
+                                    <div class="class-badge equity">E</div>
+                                    <div class="class-name">Retained Earnings</div>
+                                    <div class="class-amount">£10,000</div>
+                                </div>
+                                <div class="class-card ncl">
+                                    <div class="class-badge ncl">NCL</div>
+                                    <div class="class-name">Long-Term Bank Loan</div>
+                                    <div class="class-amount">£30,000</div>
+                                </div>
+                                <div class="class-card ca">
+                                    <div class="class-badge ca">CA</div>
+                                    <div class="class-name">Accounts Receivable</div>
+                                    <div class="class-amount">£6,000</div>
+                                </div>
+                                <div class="class-card cl">
+                                    <div class="class-badge cl">CL</div>
+                                    <div class="class-name">Short-Term Loan</div>
+                                    <div class="class-amount">£4,000</div>
+                                </div>
+                                <div class="class-card nca">
+                                    <div class="class-badge nca">NCA</div>
+                                    <div class="class-name">Land and Buildings</div>
+                                    <div class="class-amount">£75,000</div>
+                                </div>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 2rem;">
+                                <strong>Classification Logic:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>CA:</strong> Cash and Accounts Receivable (liquid, < 1 year)</li>
+                                    <li><strong>NCA:</strong> Buildings, equipment (long-term use)</li>
+                                    <li><strong>CL:</strong> Payables and short-term loan (due < 1 year)</li>
+                                    <li><strong>NCL:</strong> Long-term loan (due in 5 years)</li>
+                                    <li><strong>E:</strong> Retained earnings and common stock (owner's stake)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q2</div>
+                            Calculate Missing Common Stock
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                                <div class="step-indicator">1</div> <strong>Calculate Total Assets</strong>
+                            </div>
+                            
+                            <div class="visual-calc">
+                                <div class="visual-box">CA: £22,000 + £6,000</div>
+                                <div class="visual-operator">+</div>
+                                <div class="visual-box">NCA: £75,000 + £15,000</div>
+                            </div>
+                            <div class="visual-calc">
+                                <div class="visual-box">CA: £28,000</div>
+                                <div class="visual-operator">+</div>
+                                <div class="visual-box">NCA: £90,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">Total Assets: £118,000</div>
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0;">
+                                <div class="step-indicator">2</div> <strong>Calculate Total Liabilities</strong>
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">CL: £8,000 + £4,000</div>
+                                <div class="visual-operator">+</div>
+                                <div class="visual-box">NCL: £30,000</div>
+                            </div>
+                            <div class="visual-calc">
+                                <div class="visual-box">CL: £12,000</div>
+                                <div class="visual-operator">+</div>
+                                <div class="visual-box">NCL: £30,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">Total Liabilities: £42,000</div>
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0;">
+                                <div class="step-indicator">3</div> <strong>Apply Accounting Equation</strong>
+                            </div>
+
+                            <div class="formula-box">
+                                Assets = Liabilities + Equity<br>
+                                £118,000 = £42,000 + Equity<br>
+                                Equity = £118,000 - £42,000 = £76,000
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0;">
+                                <div class="step-indicator">4</div> <strong>Calculate Common Stock</strong>
+                            </div>
+
+                            <div class="formula-box">
+                                Total Equity = Common Stock + Retained Earnings<br>
+                                £76,000 = Common Stock + £10,000<br>
+                                Common Stock = £76,000 - £10,000
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Answer: Common Stock = £66,000</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q3</div>
+                            Construct Balanced Balance Sheet
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h4 style="text-align: center; margin-bottom: 1.5rem; font-size: 1.5rem;">Alpha Consulting Services<br><span style="font-size: 1rem; color: var(--text-muted);">Balance Sheet as at Year End</span></h4>
+                            
+                            <div class="balance-sheet">
+                                <div class="bs-column">
+                                    <div class="bs-header" style="color: var(--asset);">ASSETS</div>
+                                    
+                                    <div class="bs-section">
+                                        <div class="bs-section-title">Current Assets</div>
+                                        <div class="bs-item"><span>Cash at Bank</span><span>£22,000</span></div>
+                                        <div class="bs-item"><span>Accounts Receivable</span><span>£6,000</span></div>
+                                        <div style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.375rem; margin-top: 0.5rem; font-weight: 600;">
+                                            <span>Total CA</span><span>£28,000</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="bs-section">
+                                        <div class="bs-section-title">Non-Current Assets</div>
+                                        <div class="bs-item"><span>Land and Buildings</span><span>£75,000</span></div>
+                                        <div class="bs-item"><span>Office Furniture & Computers</span><span>£15,000</span></div>
+                                        <div style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.375rem; margin-top: 0.5rem; font-weight: 600;">
+                                            <span>Total NCA</span><span>£90,000</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="bs-total">
+                                        <span>TOTAL ASSETS</span><span>£118,000</span>
+                                    </div>
+                                </div>
+
+                                <div class="bs-column">
+                                    <div class="bs-header" style="color: var(--danger);">LIABILITIES & EQUITY</div>
+                                    
+                                    <div class="bs-section">
+                                        <div class="bs-section-title">Current Liabilities</div>
+                                        <div class="bs-item"><span>Accounts Payable</span><span>£8,000</span></div>
+                                        <div class="bs-item"><span>Short-Term Loan</span><span>£4,000</span></div>
+                                        <div style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.375rem; margin-top: 0.5rem; font-weight: 600;">
+                                            <span>Total CL</span><span>£12,000</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="bs-section">
+                                        <div class="bs-section-title">Non-Current Liabilities</div>
+                                        <div class="bs-item"><span>Long-Term Bank Loan</span><span>£30,000</span></div>
+                                        <div style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.375rem; margin-top: 0.5rem; font-weight: 600;">
+                                            <span>Total NCL</span><span>£30,000</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="bs-section">
+                                        <div class="bs-section-title" style="color: var(--success);">Equity</div>
+                                        <div class="bs-item"><span>Common Stock</span><span>£66,000</span></div>
+                                        <div class="bs-item"><span>Retained Earnings</span><span>£10,000</span></div>
+                                        <div style="display: flex; justify-content: space-between; padding: 0.75rem 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.375rem; margin-top: 0.5rem; font-weight: 600;">
+                                            <span>Total Equity</span><span>£76,000</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="bs-total">
+                                        <span>TOTAL L & E</span><span>£118,000</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 2rem;">
+                                <strong>✓ Balance Sheet is Balanced!</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    Total Assets (£118,000) = Total Liabilities (£42,000) + Total Equity (£76,000)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scenario 2 Section -->
+            <section class="content-section" id="scenario2">
+                <div class="page-header">
+                    <h1 class="page-title">Scenario 2: ShipFast E-Commerce</h1>
+                    <p class="page-description">Double-entry bookkeeping transactions</p>
+                </div>
+
+                <div class="warning-box">
+                    <strong>Remember:</strong> Every transaction has TWO effects—one debit and one credit of equal amounts.
+                </div>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">1</div>
+                            Transaction 1: Purchased Inventory on Credit
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                                <strong>Scenario:</strong> Purchased £5,000 worth of inventory from a wholesaler, promising to pay next month.
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Analysis:</h4>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                                <div style="background: rgba(59, 130, 246, 0.1); border: 2px solid var(--asset); border-radius: 0.75rem; padding: 1.5rem;">
+                                    <strong style="color: var(--asset); display: block; margin-bottom: 0.5rem;">Account 1: Inventory (Asset)</strong>
+                                    <div style="color: var(--success); font-weight: 600; margin: 0.5rem 0;">Debit: +£5,000</div>
+                                    <div style="color: var(--text-muted); font-size: 0.875rem;">Asset increases → Debit</div>
+                                </div>
+
+                                <div style="background: rgba(239, 68, 68, 0.1); border: 2px solid var(--danger); border-radius: 0.75rem; padding: 1.5rem;">
+                                    <strong style="color: var(--danger); display: block; margin-bottom: 0.5rem;">Account 2: Accounts Payable (Liability)</strong>
+                                    <div style="color: var(--success); font-weight: 600; margin: 0.5rem 0;">Credit: +£5,000</div>
+                                    <div style="color: var(--text-muted); font-size: 0.875rem;">Liability increases → Credit</div>
+                                </div>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">T-Account Representation:</h4>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="t-account">
+                                    <div class="t-account-title" style="background: var(--asset);">Inventory (Asset)</div>
+                                    <div class="t-account-body">
+                                        <div class="t-side t-side-left">
+                                            <div class="t-side-label">Debit</div>
+                                            <div class="t-entry" style="background: rgba(16, 185, 129, 0.2); border: 2px solid var(--success);">
+                                                <span>+£5,000</span>
+                                            </div>
+                                        </div>
+                                        <div class="t-side">
+                                            <div class="t-side-label">Credit</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="t-account">
+                                    <div class="t-account-title" style="background: var(--danger);">Accounts Payable (Liability)</div>
+                                    <div class="t-account-body">
+                                        <div class="t-side t-side-left">
+                                            <div class="t-side-label">Debit</div>
+                                        </div>
+                                        <div class="t-side">
+                                            <div class="t-side-label">Credit</div>
+                                            <div class="t-entry" style="background: rgba(16, 185, 129, 0.2); border: 2px solid var(--success);">
+                                                <span>+£5,000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 2rem;">
+                                <strong>✓ Journal Entry:</strong>
+                                <div class="formula-box" style="margin-top: 1rem;">
+                                    Debit: Inventory (Asset ↑) £5,000<br>
+                                    Credit: Accounts Payable (Liability ↑) £5,000
+                                </div>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 1rem;">
+                                <strong>Business Impact:</strong> The company now has £5,000 more inventory to sell, but also owes £5,000 to the supplier. Both sides of the balance sheet increase by the same amount.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">2</div>
+                            Transaction 2: Repaid Long-Term Debt
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                                <strong>Scenario:</strong> Paid £2,000 cash towards the principal balance of their long-term bank loan.
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Analysis:</h4>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                                <div style="background: rgba(239, 68, 68, 0.1); border: 2px solid var(--danger); border-radius: 0.75rem; padding: 1.5rem;">
+                                    <strong style="color: var(--danger); display: block; margin-bottom: 0.5rem;">Account 1: Long-Term Bank Loan (Liability)</strong>
+                                    <div style="color: var(--danger); font-weight: 600; margin: 0.5rem 0;">Debit: -£2,000</div>
+                                    <div style="color: var(--text-muted); font-size: 0.875rem;">Liability decreases → Debit</div>
+                                </div>
+
+                                <div style="background: rgba(59, 130, 246, 0.1); border: 2px solid var(--asset); border-radius: 0.75rem; padding: 1.5rem;">
+                                    <strong style="color: var(--asset); display: block; margin-bottom: 0.5rem;">Account 2: Cash (Asset)</strong>
+                                    <div style="color: var(--danger); font-weight: 600; margin: 0.5rem 0;">Credit: -£2,000</div>
+                                    <div style="color: var(--text-muted); font-size: 0.875rem;">Asset decreases → Credit</div>
+                                </div>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">T-Account Representation:</h4>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                                <div class="t-account">
+                                    <div class="t-account-title" style="background: var(--danger);">Long-Term Bank Loan (Liability)</div>
+                                    <div class="t-account-body">
+                                        <div class="t-side t-side-left">
+                                            <div class="t-side-label">Debit</div>
+                                            <div class="t-entry" style="background: rgba(239, 68, 68, 0.2); border: 2px solid var(--danger);">
+                                                <span>-£2,000</span>
+                                            </div>
+                                        </div>
+                                        <div class="t-side">
+                                            <div class="t-side-label">Credit</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="t-account">
+                                    <div class="t-account-title" style="background: var(--asset);">Cash (Asset)</div>
+                                    <div class="t-account-body">
+                                        <div class="t-side t-side-left">
+                                            <div class="t-side-label">Debit</div>
+                                        </div>
+                                        <div class="t-side">
+                                            <div class="t-side-label">Credit</div>
+                                            <div class="t-entry" style="background: rgba(239, 68, 68, 0.2); border: 2px solid var(--danger);">
+                                                <span>-£2,000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 2rem;">
+                                <strong>✓ Journal Entry:</strong>
+                                <div class="formula-box" style="margin-top: 1rem;">
+                                    Debit: Long-Term Bank Loan (Liability ↓) £2,000<br>
+                                    Credit: Cash (Asset ↓) £2,000
+                                </div>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 1rem;">
+                                <strong>Business Impact:</strong> The company's debt decreases by £2,000 and cash also decreases by £2,000. Both sides of the balance sheet decrease by the same amount, maintaining balance.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MCQ Section -->
+            <section class="content-section" id="mcq">
+                <div class="page-header">
+                    <h1 class="page-title">Multiple Choice Q&A</h1>
+                    <p class="page-description">Detailed explanations for all questions</p>
+                </div>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q3</div>
+                            Which item represents an obligation due beyond one year?
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;">
+                                <div class="interactive-item">
+                                    <strong>A.</strong> Accounts Payable
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>B.</strong> Taxes Payable
+                                </div>
+                                <div class="interactive-item correct">
+                                    <strong>C.</strong> Deferred Tax Liabilities ✓
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>D.</strong> Accounts Receivable
+                                </div>
+                            </div>
+
+                            <div class="success-box">
+                                <strong>Correct Answer: C - Deferred Tax Liabilities</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    Deferred tax liabilities represent future tax obligations that extend beyond one year, making them a non-current liability.
+                                </p>
+                            </div>
+
+                            <div style="margin-top: 1.5rem;">
+                                <strong>Why other options are incorrect:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>A.</strong> Accounts Payable - Current liability (due within 1 year)</li>
+                                    <li><strong>B.</strong> Taxes Payable - Current liability (due soon)</li>
+                                    <li><strong>D.</strong> Accounts Receivable - Asset, not a liability</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q4</div>
+                            What is the fundamental accounting equation?
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;">
+                                <div class="interactive-item">
+                                    <strong>A.</strong> Profit = Revenue - Expenses
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>B.</strong> Assets = Non-Current Assets + Equity
+                                </div>
+                                <div class="interactive-item correct">
+                                    <strong>C.</strong> Equity = Assets - Liabilities ✓
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>D.</strong> Liabilities = Assets - Equity
+                                </div>
+                            </div>
+
+                            <div class="success-box">
+                                <strong>Correct Answer: C - Equity = Assets - Liabilities</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    This is a rearrangement of the fundamental equation: Assets = Liabilities + Equity. Both forms are correct and must always balance.
+                                </p>
+                            </div>
+
+                            <div style="margin-top: 1.5rem;">
+                                <strong>Why other options are incorrect:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>A.</strong> This is the Income Statement equation, not Balance Sheet</li>
+                                    <li><strong>B.</strong> Incomplete - ignores current assets and liabilities</li>
+                                    <li><strong>D.</strong> Technically correct but less commonly used. Option C is the standard form</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q5</div>
+                            Company issues shares for cash - what's the double-entry?
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;">
+                                <div class="interactive-item">
+                                    <strong>A.</strong> Debit Equity, Credit Cash
+                                </div>
+                                <div class="interactive-item correct">
+                                    <strong>B.</strong> Debit Cash, Credit Common Stock (Equity) ✓
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>C.</strong> Debit Cash, Credit Accounts Payable
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>D.</strong> Debit Revenue, Credit Cash
+                                </div>
+                            </div>
+
+                            <div class="success-box">
+                                <strong>Correct Answer: B - Debit Cash, Credit Common Stock</strong>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0;">
+                                <div class="t-account">
+                                    <div class="t-account-title" style="background: var(--asset);">Cash (Asset)</div>
+                                    <div class="t-account-body">
+                                        <div class="t-side t-side-left">
+                                            <div class="t-side-label">Debit ✓</div>
+                                            <div class="t-entry" style="background: rgba(16, 185, 129, 0.2);">
+                                                <span>Cash Increases</span>
+                                            </div>
+                                        </div>
+                                        <div class="t-side">
+                                            <div class="t-side-label">Credit</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="t-account">
+                                    <div class="t-account-title" style="background: var(--success);">Common Stock (Equity)</div>
+                                    <div class="t-account-body">
+                                        <div class="t-side t-side-left">
+                                            <div class="t-side-label">Debit</div>
+                                        </div>
+                                        <div class="t-side">
+                                            <div class="t-side-label">Credit ✓</div>
+                                            <div class="t-entry" style="background: rgba(16, 185, 129, 0.2);">
+                                                <span>Equity Increases</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-box">
+                                <strong>Logic:</strong> When investors buy shares, cash (asset) increases → debit. Owner's equity increases → credit. Both sides increase equally.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q6</div>
+                            What happens when a Liability account is Debited?
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;">
+                                <div class="interactive-item">
+                                    <strong>A.</strong> It increases
+                                </div>
+                                <div class="interactive-item correct">
+                                    <strong>B.</strong> It decreases ✓
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>C.</strong> It remains the same
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>D.</strong> It is transferred to the Income Statement
+                                </div>
+                            </div>
+
+                            <div class="success-box">
+                                <strong>Correct Answer: B - It decreases</strong>
+                            </div>
+
+                            <div class="t-account" style="max-width: 500px; margin: 1.5rem auto;">
+                                <div class="t-account-title" style="background: var(--danger);">Liability Account</div>
+                                <div class="t-account-body">
+                                    <div class="t-side t-side-left">
+                                        <div class="t-side-label">Debit (Decreases)</div>
+                                        <div class="t-entry" style="background: rgba(239, 68, 68, 0.2);">
+                                            <span>Paying off debt</span>
+                                        </div>
+                                    </div>
+                                    <div class="t-side">
+                                        <div class="t-side-label">Credit (Increases)</div>
+                                        <div class="t-entry" style="background: rgba(16, 185, 129, 0.2);">
+                                            <span>Borrowing more</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-box">
+                                <strong>Remember:</strong> Liabilities have a natural CREDIT balance. To decrease them, you must DEBIT. This is opposite to assets!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q7</div>
+                            Which asset is typically the most liquid?
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;">
+                                <div class="interactive-item">
+                                    <strong>A.</strong> Inventory
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>B.</strong> Equipment
+                                </div>
+                                <div class="interactive-item correct">
+                                    <strong>C.</strong> Cash & Cash Equivalents ✓
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>D.</strong> Accounts Receivable
+                                </div>
+                            </div>
+
+                            <div class="success-box">
+                                <strong>Correct Answer: C - Cash & Cash Equivalents</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    Cash is THE definition of liquidity - it's already in liquid form and requires no conversion.
+                                </p>
+                            </div>
+
+                            <div style="margin-top: 1.5rem;">
+                                <strong>Liquidity Hierarchy (Most → Least Liquid):</strong>
+                                <ol style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Cash</strong> - Already liquid</li>
+                                    <li><strong>Accounts Receivable</strong> - Collected within 30-90 days</li>
+                                    <li><strong>Inventory</strong> - Must be sold first</li>
+                                    <li><strong>Equipment</strong> - Long-term asset, hard to convert quickly</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q8</div>
+                            What are accumulated profits kept in the business called?
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;">
+                                <div class="interactive-item">
+                                    <strong>A.</strong> Common Stock
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>B.</strong> Total Assets
+                                </div>
+                                <div class="interactive-item correct">
+                                    <strong>C.</strong> Retained Earnings ✓
+                                </div>
+                                <div class="interactive-item">
+                                    <strong>D.</strong> Accounts Payable
+                                </div>
+                            </div>
+
+                            <div class="success-box">
+                                <strong>Correct Answer: C - Retained Earnings</strong>
+                            </div>
+
+                            <div class="formula-box" style="margin: 1.5rem 0;">
+                                Retained Earnings = Opening RE + Net Income - Dividends
+                            </div>
+
+                            <div class="info-box">
+                                <strong>Understanding Retained Earnings:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Part of <strong>Equity</strong> section</li>
+                                    <li>Profits that were NOT distributed as dividends</li>
+                                    <li>Reinvested back into the business</li>
+                                    <li>Increases each year profits are retained</li>
+                                    <li>Decreases when dividends are paid or losses occur</li>
+                                </ul>
+                            </div>
+
+                            <div style="margin-top: 1.5rem;">
+                                <strong>Why other options are incorrect:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>A.</strong> Common Stock - Initial investment by owners, not accumulated profits</li>
+                                    <li><strong>B.</strong> Total Assets - What the company owns, not retained profits</li>
+                                    <li><strong>D.</strong> Accounts Payable - A liability, not equity</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Homework Section -->
+            <section class="content-section" id="homework">
+                <div class="page-header">
+                    <h1 class="page-title">Homework: GreenTech Robotics</h1>
+                    <p class="page-description">Net income and retained earnings calculations</p>
+                </div>
+
+                <div style="background: var(--surface); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem;">
+                    <strong>Given Information:</strong>
+                    <ul style="margin-top: 0.75rem; color: var(--text-muted); list-style-position: inside;">
+                        <li>Beginning Equipment (NCA): £80,000</li>
+                        <li>Beginning Common Stock (E): £50,000</li>
+                        <li>Beginning Retained Earnings (E): £30,000</li>
+                    </ul>
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <strong>During the Year:</strong>
+                        <ul style="margin-top: 0.5rem; color: var(--text-muted); list-style-position: inside;">
+                            <li>Sold £50,000 in services (all cash)</li>
+                            <li>Incurred £30,000 in Salaries and Rent (all cash)</li>
+                            <li>Took out a Short-Term Loan of £10,000 (all cash)</li>
+                            <li>Paid £2,000 in Dividends to the owner</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q1</div>
+                            Calculate Net Income for the Year
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                                <strong>Formula: Net Income = Revenue - Expenses</strong>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step-by-Step Calculation:</h4>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin-bottom: 1rem;">
+                                <div class="step-indicator">1</div> <strong>Identify Revenue</strong>
+                            </div>
+                            <div class="visual-calc">
+                                <div class="visual-box">Revenue (Services Sold)</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£50,000</div>
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0 1rem;">
+                                <div class="step-indicator">2</div> <strong>Identify Expenses</strong>
+                            </div>
+                            <div class="visual-calc">
+                                <div class="visual-box">Salaries and Rent</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£30,000</div>
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0 1rem;">
+                                <div class="step-indicator">3</div> <strong>Calculate Net Income</strong>
+                            </div>
+                            <div class="visual-calc">
+                                <div class="visual-box">Revenue: £50,000</div>
+                                <div class="visual-operator">−</div>
+                                <div class="visual-box">Expenses: £30,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">Net Income: £20,000</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 2rem;">
+                                <strong>✓ Answer: Net Income = £20,000</strong>
+                            </div>
+
+                            <div class="warning-box" style="margin-top: 1rem;">
+                                <strong>Important Note:</strong> The short-term loan of £10,000 is NOT included in the income calculation. Loans are financing activities (balance sheet), not revenue. Dividends are also NOT expenses—they're distributions of profit.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q2</div>
+                            Calculate Final Retained Earnings
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box" style="margin-bottom: 1.5rem;">
+                                Ending RE = Opening RE + Net Income - Dividends
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step-by-Step Calculation:</h4>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin-bottom: 1rem;">
+                                <div class="step-indicator">1</div> <strong>Start with Opening Retained Earnings</strong>
+                            </div>
+                            <div class="visual-calc">
+                                <div class="visual-box">Opening RE</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£30,000</div>
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0 1rem;">
+                                <div class="step-indicator">2</div> <strong>Add Net Income (from Q1)</strong>
+                            </div>
+                            <div class="visual-calc">
+                                <div class="visual-box">Opening RE: £30,000</div>
+                                <div class="visual-operator">+</div>
+                                <div class="visual-box">Net Income: £20,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£50,000</div>
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0 1rem;">
+                                <div class="step-indicator">3</div> <strong>Subtract Dividends Paid</strong>
+                            </div>
+                            <div class="visual-calc">
+                                <div class="visual-box">£50,000</div>
+                                <div class="visual-operator">−</div>
+                                <div class="visual-box">Dividends: £2,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">Final RE: £48,000</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 2rem;">
+                                <strong>✓ Answer: Final Retained Earnings = £48,000</strong>
+                            </div>
+
+                            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--surface); border: 2px solid var(--primary); border-radius: 0.75rem;">
+                                <h4 style="margin-bottom: 1rem;">Complete Reconciliation:</h4>
+                                <table style="width: 100%; color: var(--text-muted);">
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 0.5rem;">Opening Retained Earnings</td>
+                                        <td style="text-align: right; padding: 0.5rem;">£30,000</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 0.5rem; color: var(--success);">+ Net Income</td>
+                                        <td style="text-align: right; padding: 0.5rem; color: var(--success);">£20,000</td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 0.5rem; color: var(--danger);">- Dividends Paid</td>
+                                        <td style="text-align: right; padding: 0.5rem; color: var(--danger);">(£2,000)</td>
+                                    </tr>
+                                    <tr style="background: var(--primary); color: white;">
+                                        <td style="padding: 0.75rem; font-weight: 700;">Ending Retained Earnings</td>
+                                        <td style="text-align: right; padding: 0.75rem; font-weight: 700;">£48,000</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 1.5rem;">
+                                <strong>Key Insights:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Net income of £20,000 represents profitable operations</li>
+                                    <li>The company retained £18,000 of that profit (£20,000 - £2,000 dividends)</li>
+                                    <li>Retained earnings grew from £30,000 to £48,000 (60% increase)</li>
+                                    <li>This strengthens the company's equity position</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 1rem; color: white; text-align: center;">
+                    <h3 style="margin-bottom: 1rem;">🎓 Tutorial 3 Complete!</h3>
+                    <p style="opacity: 0.9;">You've mastered account classification, the accounting equation, double-entry bookkeeping, and balance sheet construction.</p>
+                    <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem 1.5rem; border-radius: 0.5rem;">
+                            <strong>5 Classifications</strong><br>
+                            <span style="font-size: 0.875rem; opacity: 0.9;">CA, NCA, CL, NCL, E</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem 1.5rem; border-radius: 0.5rem;">
+                            <strong>Golden Rule</strong><br>
+                            <span style="font-size: 0.875rem; opacity: 0.9;">Assets = L + E</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem 1.5rem; border-radius: 0.5rem;">
+                            <strong>Double-Entry</strong><br>
+                            <span style="font-size: 0.875rem; opacity: 0.9;">Dr = Cr Always</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                this.classList.add('active');
+                
+                const sectionId = this.dataset.section;
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Accordion Toggle
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const item = this.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+
+        // Tabs
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const tabId = this.dataset.tab;
+                const tabContainer = this.closest('.tabs');
+                
+                tabContainer.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                tabContainer.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Interactive hover effects for classification cards
+        document.querySelectorAll('.class-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Balance sheet item highlighting
+        document.querySelectorAll('.bs-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.background = 'rgba(59, 130, 246, 0.2)';
+                setTimeout(() => {
+                    this.style.background = '';
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>
