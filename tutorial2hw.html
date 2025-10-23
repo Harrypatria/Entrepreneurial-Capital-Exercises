@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial 2: Interactive Study Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover {
+            background: var(--surface-light);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-description {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+        }
+
+        /* Interactive Formula Builder */
+        .formula-builder {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .formula-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .formula-step {
+            background: var(--surface-light);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .formula-step:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .formula-step.active {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, var(--surface-light), rgba(59, 130, 246, 0.1));
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-number {
+            background: var(--primary);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .step-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .step-formula {
+            font-family: 'Courier New', monospace;
+            font-size: 1.125rem;
+            color: var(--primary);
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .step-explanation {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .formula-step.active .step-explanation {
+            max-height: 500px;
+        }
+
+        .step-visual {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(139, 92, 246, 0.05);
+            border-radius: 0.5rem;
+            border: 1px dashed var(--secondary);
+        }
+
+        .formula-step.active .step-visual {
+            display: block;
+        }
+
+        .visual-calc {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .visual-box {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            background: var(--surface);
+            border: 2px solid var(--border);
+        }
+
+        .visual-operator {
+            color: var(--secondary);
+            font-size: 1.5rem;
+        }
+
+        .visual-result {
+            padding: 0.75rem 1.25rem;
+            background: var(--success);
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 700;
+        }
+
+        /* Accordion */
+        .accordion {
+            margin-bottom: 2rem;
+        }
+
+        .accordion-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .accordion-header:hover {
+            background: var(--surface-light);
+        }
+
+        .accordion-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .accordion-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .accordion-toggle {
+            transition: transform 0.3s;
+            color: var(--text-muted);
+        }
+
+        .accordion-item.active .accordion-toggle {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 2000px;
+        }
+
+        .accordion-body {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Tabs */
+        .tabs {
+            margin-bottom: 2rem;
+        }
+
+        .tab-list {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab-button:hover {
+            color: var(--text);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Q&A Cards */
+        .qa-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .qa-question {
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .qa-answer {
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .qa-calculation {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid var(--primary);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .qa-result {
+            background: var(--success);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        /* Interactive Number Input */
+        .calculator {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .calc-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .input-field {
+            padding: 0.75rem;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .calc-button {
+            padding: 0.875rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calc-button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .calc-result {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 2px solid var(--success);
+            border-radius: 0.75rem;
+        }
+
+        .calc-result.show {
+            display: block;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            .visual-calc {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .highlight {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .badge-success {
+            background: var(--success);
+        }
+
+        .badge-warning {
+            background: var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Tutorial 2</div>
+                <div class="sidebar-subtitle">Interactive Study Guide</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Core Concepts</div>
+                <div class="nav-item active" data-section="contribution">
+                    <div class="nav-icon">💰</div>
+                    <span>Contribution Margin</span>
+                </div>
+                <div class="nav-item" data-section="breakeven">
+                    <div class="nav-icon">⚖️</div>
+                    <span>Break-Even Point</span>
+                </div>
+                <div class="nav-item" data-section="mos">
+                    <div class="nav-icon">🛡️</div>
+                    <span>Margin of Safety</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Profitability Metrics</div>
+                <div class="nav-item" data-section="ebitda">
+                    <div class="nav-icon">📊</div>
+                    <span>EBITDA & EBIT</span>
+                </div>
+                <div class="nav-item" data-section="cascade">
+                    <div class="nav-icon">🔄</div>
+                    <span>Income Cascade</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Practice</div>
+                <div class="nav-item" data-section="scenario1">
+                    <div class="nav-icon">🏪</div>
+                    <span>Scenario 1: Green Grocer</span>
+                </div>
+                <div class="nav-item" data-section="scenario2">
+                    <div class="nav-icon">🤖</div>
+                    <span>Scenario 2: RoboClean</span>
+                </div>
+                <div class="nav-item" data-section="calculator">
+                    <div class="nav-icon">🧮</div>
+                    <span>Interactive Calculator</span>
+                </div>
+                <div class="nav-item" data-section="homework">
+                    <div class="nav-icon">📝</div>
+                    <span>Homework: Urban Munch</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Contribution Margin Section -->
+            <section class="content-section active" id="contribution">
+                <div class="page-header">
+                    <h1 class="page-title">Contribution Margin</h1>
+                    <p class="page-description">The foundation of break-even analysis</p>
+                </div>
+
+                <div class="formula-builder">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text);">Click each step to explore</h3>
+                    <div class="formula-steps">
+                        <div class="formula-step active">
+                            <div class="step-header">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div class="step-number">1</div>
+                                    <div class="step-title">Contribution per Unit</div>
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="step-formula">Contribution = Selling Price - Variable Cost</div>
+                            <div class="step-explanation">
+                                This is the amount from each sale that contributes to covering fixed costs and generating profit.
+                            </div>
+                            <div class="step-visual">
+                                <div class="visual-calc">
+                                    <div class="visual-box">SP: £30</div>
+                                    <div class="visual-operator">−</div>
+                                    <div class="visual-box">VC: £12</div>
+                                    <div class="visual-operator">=</div>
+                                    <div class="visual-result">£18</div>
+                                </div>
+                                <p style="margin-top: 1rem; color: var(--text-muted);">
+                                    Every customer visit generates <span class="highlight">£18</span> to cover fixed costs and profit.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="formula-step">
+                            <div class="step-header">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div class="step-number">2</div>
+                                    <div class="step-title">Contribution Margin Ratio</div>
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="step-formula">CM Ratio = Contribution per Unit ÷ Selling Price</div>
+                            <div class="step-explanation">
+                                Expresses contribution as a percentage of sales price. Useful for calculating break-even in revenue terms.
+                            </div>
+                            <div class="step-visual">
+                                <div class="visual-calc">
+                                    <div class="visual-box">£18</div>
+                                    <div class="visual-operator">÷</div>
+                                    <div class="visual-box">£30</div>
+                                    <div class="visual-operator">=</div>
+                                    <div class="visual-result">0.60 or 60%</div>
+                                </div>
+                                <p style="margin-top: 1rem; color: var(--text-muted);">
+                                    For every £1 of sales, <span class="highlight">60p</span> contributes to fixed costs and profit.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="formula-step">
+                            <div class="step-header">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div class="step-number">3</div>
+                                    <div class="step-title">Why It Matters</div>
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="step-formula">Higher Contribution = Lower Break-Even Point</div>
+                            <div class="step-explanation">
+                                Contribution margin is the key to profitability. Strategies to increase it:
+                            </div>
+                            <div class="step-visual">
+                                <ul style="list-style: none; padding: 0;">
+                                    <li style="padding: 0.5rem 0;">✓ <strong>Increase selling price</strong> - raises contribution directly</li>
+                                    <li style="padding: 0.5rem 0;">✓ <strong>Reduce variable costs</strong> - negotiate better supplier prices</li>
+                                    <li style="padding: 0.5rem 0;">✓ <strong>Add value</strong> - justify premium pricing</li>
+                                    <li style="padding: 0.5rem 0;">✓ <strong>Volume discounts</strong> - reduce per-unit variable costs</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Break-Even Point Section -->
+            <section class="content-section" id="breakeven">
+                <div class="page-header">
+                    <h1 class="page-title">Break-Even Point</h1>
+                    <p class="page-description">Where revenue equals total costs</p>
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-item active">
+                        <div class="accordion-header">
+                            <div class="accordion-title">
+                                <div class="accordion-icon">1</div>
+                                BEP in Units
+                            </div>
+                            <div class="accordion-toggle">▼</div>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <div class="step-formula">BEP (Units) = Fixed Costs ÷ Contribution per Unit</div>
+                                
+                                <h4 style="margin: 1.5rem 0 1rem; color: var(--text);">Visual Breakdown</h4>
+                                <div class="visual-calc">
+                                    <div class="visual-box">FC: £6,000</div>
+                                    <div class="visual-operator">÷</div>
+                                    <div class="visual-box">Contribution: £18</div>
+                                    <div class="visual-operator">=</div>
+                                    <div class="visual-result">333.33 units</div>
+                                </div>
+
+                                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 0.5rem;">
+                                    <strong>Interpretation:</strong> The business needs <span class="highlight">334 customer visits</span> per month to cover all costs. Before this point = losses. After this point = profit.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="accordion-title">
+                                <div class="accordion-icon">2</div>
+                                BEP in Revenue (£)
+                            </div>
+                            <div class="accordion-toggle">▼</div>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <div class="step-formula">BEP (£) = Fixed Costs ÷ CM Ratio</div>
+                                
+                                <h4 style="margin: 1.5rem 0 1rem; color: var(--text);">Visual Breakdown</h4>
+                                <div class="visual-calc">
+                                    <div class="visual-box">FC: £6,000</div>
+                                    <div class="visual-operator">÷</div>
+                                    <div class="visual-box">CM Ratio: 0.60</div>
+                                    <div class="visual-operator">=</div>
+                                    <div class="visual-result">£10,000</div>
+                                </div>
+
+                                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;">
+                                    <strong>Verification:</strong> 333.33 units × £30 per unit = £10,000 ✓
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <div class="accordion-title">
+                                <div class="accordion-icon">3</div>
+                                Strategies to Reduce BEP
+                            </div>
+                            <div class="accordion-toggle">▼</div>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-body">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                                    <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem;">
+                                        <strong style="color: var(--success);">✓ Increase Contribution</strong>
+                                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Raise prices or reduce variable costs → Lower BEP</p>
+                                    </div>
+                                    <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem;">
+                                        <strong style="color: var(--success);">✓ Reduce Fixed Costs</strong>
+                                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Negotiate rent, optimize staffing → Lower BEP</p>
+                                    </div>
+                                    <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem;">
+                                        <strong style="color: var(--danger);">✗ Lower Prices</strong>
+                                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Reduces contribution → Higher BEP</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Margin of Safety Section -->
+            <section class="content-section" id="mos">
+                <div class="page-header">
+                    <h1 class="page-title">Margin of Safety</h1>
+                    <p class="page-description">Your cushion above break-even</p>
+                </div>
+
+                <div class="formula-builder">
+                    <div class="formula-steps">
+                        <div class="formula-step active">
+                            <div class="step-header">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div class="step-number">1</div>
+                                    <div class="step-title">MOS in Revenue</div>
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="step-formula">MOS (£) = Actual Sales - BEP Sales</div>
+                            <div class="step-explanation">
+                                The absolute amount by which sales exceed break-even.
+                            </div>
+                            <div class="step-visual">
+                                <div class="visual-calc">
+                                    <div class="visual-box">Actual: £12,000</div>
+                                    <div class="visual-operator">−</div>
+                                    <div class="visual-box">BEP: £10,000</div>
+                                    <div class="visual-operator">=</div>
+                                    <div class="visual-result">£2,000</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="formula-step">
+                            <div class="step-header">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div class="step-number">2</div>
+                                    <div class="step-title">MOS as Percentage</div>
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="step-formula">MOS (%) = (MOS £ ÷ Actual Sales) × 100</div>
+                            <div class="step-explanation">
+                                Expresses the safety margin as a percentage of current sales.
+                            </div>
+                            <div class="step-visual">
+                                <div class="visual-calc">
+                                    <div class="visual-box">£2,000</div>
+                                    <div class="visual-operator">÷</div>
+                                    <div class="visual-box">£12,000</div>
+                                    <div class="visual-operator">×</div>
+                                    <div class="visual-box">100</div>
+                                    <div class="visual-operator">=</div>
+                                    <div class="visual-result">16.67%</div>
+                                </div>
+                                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 0.5rem; border-left: 3px solid var(--warning);">
+                                    <strong>Critical Insight:</strong> Sales can drop by <span class="highlight">16.67%</span> before the business starts making losses. This is your risk buffer!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="formula-step">
+                            <div class="step-header">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div class="step-number">3</div>
+                                    <div class="step-title">Interpreting MOS</div>
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="step-formula">Risk Assessment Framework</div>
+                            <div class="step-explanation">
+                                How to evaluate different MOS percentages:
+                            </div>
+                            <div class="step-visual">
+                                <div style="display: grid; gap: 1rem;">
+                                    <div style="padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--danger); border-radius: 0.5rem;">
+                                        <strong>< 10% - High Risk</strong>
+                                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Very vulnerable to sales fluctuations. Urgent action needed.</p>
+                                    </div>
+                                    <div style="padding: 1rem; background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--warning); border-radius: 0.5rem;">
+                                        <strong>10-20% - Moderate Risk</strong>
+                                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Some cushion but should monitor closely. Room for improvement.</p>
+                                    </div>
+                                    <div style="padding: 1rem; background: rgba(16, 185, 129, 0.1); border-left: 3px solid var(--success); border-radius: 0.5rem;">
+                                        <strong>> 20% - Low Risk</strong>
+                                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Strong safety margin. Business can weather downturns.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EBITDA Section -->
+            <section class="content-section" id="ebitda">
+                <div class="page-header">
+                    <h1 class="page-title">EBITDA & EBIT</h1>
+                    <p class="page-description">Understanding operational profitability</p>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab-list">
+                        <button class="tab-button active" data-tab="ebit-tab">EBIT Calculation</button>
+                        <button class="tab-button" data-tab="ebitda-tab">EBITDA Calculation</button>
+                        <button class="tab-button" data-tab="why-tab">Why EBITDA?</button>
+                    </div>
+
+                    <div class="tab-content active" id="ebit-tab">
+                        <div class="formula-builder">
+                            <h3 style="margin-bottom: 1rem; color: var(--text);">EBIT (Operating Profit)</h3>
+                            <div class="step-formula">EBIT = Profit Before Tax (PBT) + Interest</div>
+                            
+                            <div style="margin: 2rem 0;">
+                                <h4 style="margin-bottom: 1rem; color: var(--text);">Example: RoboClean</h4>
+                                <div class="visual-calc">
+                                    <div class="visual-box">PBT: £32,000</div>
+                                    <div class="visual-operator">+</div>
+                                    <div class="visual-box">Interest: £5,000</div>
+                                    <div class="visual-operator">=</div>
+                                    <div class="visual-result">EBIT: £37,000</div>
+                                </div>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem;">
+                                <strong>What it shows:</strong> Profit from operations before considering how the business is financed (interest) or taxed. Pure operational performance.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="ebitda-tab">
+                        <div class="formula-builder">
+                            <h3 style="margin-bottom: 1rem; color: var(--text);">EBITDA Calculation</h3>
+                            <div class="step-formula">EBITDA = EBIT + Depreciation + Amortisation</div>
+                            
+                            <div style="margin: 2rem 0;">
+                                <h4 style="margin-bottom: 1rem; color: var(--text);">Step-by-Step</h4>
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div class="visual-calc">
+                                        <div class="visual-box">EBIT: £37,000</div>
+                                        <div class="visual-operator">+</div>
+                                        <div class="visual-box">Depreciation: £10,000</div>
+                                        <div class="visual-operator">=</div>
+                                        <div class="visual-result">£47,000</div>
+                                    </div>
+                                    <div class="visual-calc">
+                                        <div class="visual-box">£47,000</div>
+                                        <div class="visual-operator">+</div>
+                                        <div class="visual-box">Amortisation: £3,000</div>
+                                        <div class="visual-operator">=</div>
+                                        <div class="visual-result">EBITDA: £50,000</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: rgba(139, 92, 246, 0.1); border-radius: 0.75rem; border-left: 3px solid var(--secondary);">
+                                <strong>Key Point:</strong> EBITDA adds back non-cash expenses (Depreciation & Amortisation) to show cash-based operational performance.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="why-tab">
+                        <div class="qa-card">
+                            <div class="qa-question">Why is EBITDA preferred for international comparisons?</div>
+                            <div class="qa-answer">
+                                <p style="margin-bottom: 1rem;">EBITDA eliminates three major distortions:</p>
+                                
+                                <div style="display: grid; gap: 1rem; margin-top: 1rem;">
+                                    <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem;">
+                                        <strong style="color: var(--primary);">1. Financing Differences</strong>
+                                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Interest rates vary by country and company capital structure. Removing interest allows pure operational comparison.</p>
+                                    </div>
+                                    
+                                    <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem;">
+                                        <strong style="color: var(--primary);">2. Tax Regime Differences</strong>
+                                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Corporate tax rates differ globally (US: 21%, UK: 25%, Ireland: 12.5%). EBITDA ignores tax for fair comparison.</p>
+                                    </div>
+                                    
+                                    <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem;">
+                                        <strong style="color: var(--primary);">3. Accounting Policy Differences</strong>
+                                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Depreciation methods vary (straight-line vs. accelerated). Removing D&A eliminates this variation.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Income Cascade Section -->
+            <section class="content-section" id="cascade">
+                <div class="page-header">
+                    <h1 class="page-title">Income Statement Cascade</h1>
+                    <p class="page-description">From EBITDA to Net Profit</p>
+                </div>
+
+                <div style="max-width: 600px; margin: 0 auto;">
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 1.5rem; border-radius: 0.75rem; text-align: center;">
+                            <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.25rem;">Start Here</div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">EBITDA</div>
+                            <div style="font-size: 0.875rem; opacity: 0.9; margin-top: 0.25rem;">£50,000</div>
+                        </div>
+
+                        <div style="text-align: center; color: var(--text-muted); font-size: 1.5rem;">↓</div>
+                        <div style="background: var(--surface); padding: 1rem; border-radius: 0.5rem; text-align: center; border: 1px solid var(--border);">
+                            <div style="color: var(--danger);">− Depreciation: £10,000</div>
+                            <div style="color: var(--danger);">− Amortisation: £3,000</div>
+                        </div>
+
+                        <div style="text-align: center; color: var(--text-muted); font-size: 1.5rem;">↓</div>
+                        <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 0.75rem; text-align: center;">
+                            <div style="font-size: 1.25rem; font-weight: 600;">EBIT (Operating Profit)</div>
+                            <div style="font-size: 1.125rem; margin-top: 0.25rem;">£37,000</div>
+                        </div>
+
+                        <div style="text-align: center; color: var(--text-muted); font-size: 1.5rem;">↓</div>
+                        <div style="background: var(--surface); padding: 1rem; border-radius: 0.5rem; text-align: center; border: 1px solid var(--border);">
+                            <div style="color: var(--danger);">− Interest: £5,000</div>
+                        </div>
+
+                        <div style="text-align: center; color: var(--text-muted); font-size: 1.5rem;">↓</div>
+                        <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 0.75rem; text-align: center;">
+                            <div style="font-size: 1.25rem; font-weight: 600;">PBT (Profit Before Tax)</div>
+                            <div style="font-size: 1.125rem; margin-top: 0.25rem;">£32,000</div>
+                        </div>
+
+                        <div style="text-align: center; color: var(--text-muted); font-size: 1.5rem;">↓</div>
+                        <div style="background: var(--surface); padding: 1rem; border-radius: 0.5rem; text-align: center; border: 1px solid var(--border);">
+                            <div style="color: var(--danger);">− Corporation Tax: £8,000</div>
+                        </div>
+
+                        <div style="text-align: center; color: var(--text-muted); font-size: 1.5rem;">↓</div>
+                        <div style="background: linear-gradient(135deg, var(--success), #059669); padding: 1.5rem; border-radius: 0.75rem; text-align: center;">
+                            <div style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 0.25rem;">Bottom Line</div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">PAT (Net Profit)</div>
+                            <div style="font-size: 0.875rem; opacity: 0.9; margin-top: 0.25rem;">£24,000</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scenario 1 Section -->
+            <section class="content-section" id="scenario1">
+                <div class="page-header">
+                    <h1 class="page-title">Scenario 1: The Green Grocer</h1>
+                    <p class="page-description">Break-even and margin of safety analysis</p>
+                </div>
+
+                <div class="qa-card">
+                    <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                        <strong>Given Information:</strong>
+                        <ul style="margin-top: 0.5rem; color: var(--text-muted); list-style-position: inside;">
+                            <li>Fixed Costs: £6,000/month</li>
+                            <li>Selling Price per Visit: £30</li>
+                            <li>Variable Cost per Visit: £12</li>
+                            <li>Actual Sales: £12,000/month</li>
+                        </ul>
+                    </div>
+
+                    <div class="accordion">
+                        <div class="accordion-item active">
+                            <div class="accordion-header">
+                                <div class="accordion-title">
+                                    <div class="accordion-icon">Q1</div>
+                                    Calculate BEP in Sales Revenue (£)
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <div class="qa-calculation">
+                                        <strong>Step 1: Calculate Contribution per Unit</strong><br>
+                                        Contribution = £30 - £12 = £18
+                                    </div>
+                                    <div class="qa-calculation">
+                                        <strong>Step 2: Calculate CM Ratio</strong><br>
+                                        CM Ratio = £18 ÷ £30 = 0.60 (60%)
+                                    </div>
+                                    <div class="qa-calculation">
+                                        <strong>Step 3: Calculate BEP (£)</strong><br>
+                                        BEP = £6,000 ÷ 0.60 = £10,000
+                                    </div>
+                                    <div class="qa-result">
+                                        ✓ Answer: £10,000 monthly sales revenue needed to break even
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <div class="accordion-title">
+                                    <div class="accordion-icon">Q2</div>
+                                    Calculate BEP in Customer Visits (Units)
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <div class="qa-calculation">
+                                        <strong>Formula: BEP (Units) = Fixed Costs ÷ Contribution per Unit</strong><br><br>
+                                        BEP = £6,000 ÷ £18 = 333.33 customer visits
+                                    </div>
+                                    <div class="qa-result">
+                                        ✓ Answer: 333.33 customer visits per month (round to 334 in practice)
+                                    </div>
+                                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.5rem;">
+                                        <strong>Verification:</strong> 333.33 × £30 = £10,000 ✓
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <div class="accordion-title">
+                                    <div class="accordion-icon">Q3</div>
+                                    Calculate Margin of Safety (£ and %)
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <div class="qa-calculation">
+                                        <strong>Step 1: MOS in Revenue</strong><br>
+                                        MOS (£) = Actual Sales - BEP Sales<br>
+                                        MOS (£) = £12,000 - £10,000 = £2,000
+                                    </div>
+                                    <div class="qa-calculation">
+                                        <strong>Step 2: MOS as Percentage</strong><br>
+                                        MOS (%) = (£2,000 ÷ £12,000) × 100<br>
+                                        MOS (%) = 16.67%
+                                    </div>
+                                    <div class="qa-result">
+                                        ✓ MOS Revenue: £2,000 | MOS Percentage: 16.67%
+                                    </div>
+                                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 0.5rem; border-left: 3px solid var(--warning);">
+                                        <strong>Interpretation:</strong> The Green Grocer can afford a 16.67% drop in sales (from £12,000 to £10,000) before it starts making losses. This represents moderate risk—there's a cushion, but careful monitoring is advised.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scenario 2 Section -->
+            <section class="content-section" id="scenario2">
+                <div class="page-header">
+                    <h1 class="page-title">Scenario 2: RoboClean Robotics</h1>
+                    <p class="page-description">EBITDA and EBIT calculations</p>
+                </div>
+
+                <div class="qa-card">
+                    <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                        <strong>Given Information:</strong>
+                        <ul style="margin-top: 0.5rem; color: var(--text-muted); list-style-position: inside;">
+                            <li>Profit Before Tax (PBT): £32,000</li>
+                            <li>Interest Expense: £5,000</li>
+                            <li>Depreciation: £10,000</li>
+                            <li>Amortisation: £3,000</li>
+                            <li>Corporation Tax: £8,000</li>
+                        </ul>
+                    </div>
+
+                    <div class="accordion">
+                        <div class="accordion-item active">
+                            <div class="accordion-header">
+                                <div class="accordion-title">
+                                    <div class="accordion-icon">Q1</div>
+                                    Calculate EBITDA
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <div class="qa-calculation">
+                                        <strong>Formula: EBITDA = EBIT + Depreciation + Amortisation</strong><br><br>
+                                        First, we need EBIT:<br>
+                                        EBIT = PBT + Interest<br>
+                                        EBIT = £32,000 + £5,000 = £37,000
+                                    </div>
+                                    <div class="qa-calculation">
+                                        <strong>Now calculate EBITDA:</strong><br>
+                                        EBITDA = £37,000 + £10,000 + £3,000<br>
+                                        EBITDA = £50,000
+                                    </div>
+                                    <div class="qa-result">
+                                        ✓ Answer: EBITDA = £50,000
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <div class="accordion-title">
+                                    <div class="accordion-icon">Q2</div>
+                                    Calculate Operating Profit (EBIT)
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <div class="qa-calculation">
+                                        <strong>Formula: EBIT = PBT + Interest</strong><br><br>
+                                        EBIT = £32,000 + £5,000<br>
+                                        EBIT = £37,000
+                                    </div>
+                                    <div class="qa-result">
+                                        ✓ Answer: EBIT (Operating Profit) = £37,000
+                                    </div>
+                                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 0.5rem;">
+                                        <strong>Why add interest back?</strong> EBIT shows profit from operations before considering how the business is financed. This allows comparison between companies with different debt levels.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <div class="accordion-title">
+                                    <div class="accordion-icon">Q3</div>
+                                    Why is EBITDA preferred for international comparisons?
+                                </div>
+                                <div class="accordion-toggle">▼</div>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <div class="qa-answer">
+                                        <p style="margin-bottom: 1rem;">EBITDA provides a "clean" measure of operational performance by removing distortions from:</p>
+                                        
+                                        <div style="display: grid; gap: 1rem;">
+                                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; border-left: 3px solid var(--primary);">
+                                                <strong>1. Financing Differences (Interest)</strong>
+                                                <p style="color: var(--text-muted); margin-top: 0.5rem;">
+                                                    Companies have different capital structures (debt vs equity). Removing interest lets you compare operational efficiency regardless of how companies choose to finance themselves.
+                                                </p>
+                                            </div>
+                                            
+                                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; border-left: 3px solid var(--primary);">
+                                                <strong>2. Taxation Regimes (Tax)</strong>
+                                                <p style="color: var(--text-muted); margin-top: 0.5rem;">
+                                                    Corporate tax rates vary dramatically between countries. EBITDA removes this variable, allowing fair comparison of core business performance.
+                                                </p>
+                                            </div>
+                                            
+                                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; border-left: 3px solid var(--primary);">
+                                                <strong>3. Accounting Policies (D&A)</strong>
+                                                <p style="color: var(--text-muted); margin-top: 0.5rem;">
+                                                    Different depreciation methods (straight-line, accelerated) and amortisation schedules create artificial differences. EBITDA eliminates these accounting choices to reveal true operational performance.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--success); color: white; border-radius: 0.75rem;">
+                                            <strong>Bottom Line:</strong> When RoboClean competes with a Japanese or German robotics firm, EBITDA allows investors to compare "apples to apples"—focusing purely on how well each company generates profit from its core operations.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive Calculator Section -->
+            <section class="content-section" id="calculator">
+                <div class="page-header">
+                    <h1 class="page-title">Interactive Calculator</h1>
+                    <p class="page-description">Practice with your own numbers</p>
+                </div>
+
+                <div class="calculator">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--text);">Break-Even Calculator</h3>
+                    <div class="calc-inputs">
+                        <div class="input-group">
+                            <label class="input-label">Fixed Costs (£)</label>
+                            <input type="number" class="input-field" id="fixedCosts" placeholder="6000">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Selling Price per Unit (£)</label>
+                            <input type="number" class="input-field" id="sellingPrice" placeholder="30">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Variable Cost per Unit (£)</label>
+                            <input type="number" class="input-field" id="variableCost" placeholder="12">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Actual Sales (£) - Optional</label>
+                            <input type="number" class="input-field" id="actualSales" placeholder="12000">
+                        </div>
+                    </div>
+                    <button class="calc-button" onclick="calculateBEP()">Calculate Break-Even</button>
+                    
+                    <div class="calc-result" id="calcResult">
+                        <h4 style="margin-bottom: 1rem; color: var(--success);">Results</h4>
+                        <div id="resultContent"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Homework Section -->
+            <section class="content-section" id="homework">
+                <div class="page-header">
+                    <h1 class="page-title">Homework: Urban Munch Food Truck</h1>
+                    <p class="page-description">After-Tutorial Exercise 2</p>
+                </div>
+
+                <div style="background: var(--surface); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+                    <h3 style="margin-bottom: 1rem;">🚚 Scenario</h3>
+                    <p style="margin-bottom: 1rem; color: var(--text-muted);">
+                        An entrepreneur is planning a new food truck venture, <strong>Urban Munch</strong>. The initial financial plan includes:
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem;">
+                            <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">Fixed Costs</div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">£30,000</div>
+                            <div style="color: var(--text-muted); font-size: 0.875rem;">per year</div>
+                        </div>
+                        <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem;">
+                            <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">Selling Price</div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">£8</div>
+                            <div style="color: var(--text-muted); font-size: 0.875rem;">per meal</div>
+                        </div>
+                        <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem;">
+                            <div style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.25rem;">Variable Cost</div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">£3.50</div>
+                            <div style="color: var(--text-muted); font-size: 0.875rem;">per meal</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q1</div>
+                            BEP (Units): Calculate Break-Even Point in Meals
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                                <div class="step-indicator">1</div> <strong>Calculate Contribution per Meal</strong>
+                            </div>
+                            
+                            <div class="formula-box">
+                                Contribution per Unit = Selling Price - Variable Cost
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">SP: £8.00</div>
+                                <div class="visual-operator">−</div>
+                                <div class="visual-box">VC: £3.50</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£4.50</div>
+                            </div>
+
+                            <p style="margin: 1rem 0; color: var(--text-muted);">
+                                Each meal sold contributes <span class="highlight">£4.50</span> toward covering fixed costs and generating profit.
+                            </p>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0;">
+                                <div class="step-indicator">2</div> <strong>Calculate BEP in Units</strong>
+                            </div>
+
+                            <div class="formula-box">
+                                BEP (Units) = Fixed Costs ÷ Contribution per Unit
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">FC: £30,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">Contribution: £4.50</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">6,666.67 meals</div>
+                            </div>
+
+                            <div class="qa-result" style="margin-top: 2rem;">
+                                ✓ Answer: <strong>6,666.67 meals</strong> (round to 6,667 in practice)
+                            </div>
+
+                            <div style="margin-top: 1.5rem; padding: 1.5rem; background: rgba(139, 92, 246, 0.1); border-radius: 0.5rem; border-left: 3px solid var(--secondary);">
+                                <strong>Interpretation:</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    Urban Munch must sell approximately <span class="highlight">6,667 meals per year</span> to break even. At this point, total revenue equals total costs, resulting in zero profit or loss.
+                                </p>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    • Sales below 6,667 meals = <strong style="color: var(--danger);">Loss</strong><br>
+                                    • Sales above 6,667 meals = <strong style="color: var(--success);">Profit</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q2</div>
+                            BEP (Revenue): Calculate Break-Even Point in £
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;">There are <strong>two methods</strong> to calculate BEP in revenue. Both give the same answer.</p>
+
+                            <h4 style="margin: 1.5rem 0 1rem;">Method 1: Using BEP Units</h4>
+                            
+                            <div class="formula-box">
+                                BEP (£) = BEP (Units) × Selling Price per Unit
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">6,666.67 meals</div>
+                                <div class="visual-operator">×</div>
+                                <div class="visual-box">£8.00</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£53,333.36</div>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Method 2: Using CM Ratio</h4>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                                <div class="step-indicator">1</div> <strong>Calculate Contribution Margin Ratio</strong>
+                            </div>
+
+                            <div class="formula-box">
+                                CM Ratio = Contribution per Unit ÷ Selling Price
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£4.50</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£8.00</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">0.5625 or 56.25%</div>
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0;">
+                                <div class="step-indicator">2</div> <strong>Calculate BEP (£)</strong>
+                            </div>
+
+                            <div class="formula-box">
+                                BEP (£) = Fixed Costs ÷ CM Ratio
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£30,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">0.5625</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£53,333.33</div>
+                            </div>
+
+                            <div class="qa-result" style="margin-top: 2rem;">
+                                ✓ Answer: <strong>£53,333.36</strong> annual sales revenue
+                            </div>
+
+                            <div style="margin-top: 1.5rem; padding: 1.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem; border-left: 3px solid var(--success);">
+                                <strong>Verification:</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    Both methods confirm: Urban Munch needs <span class="highlight">£53,333.36 in annual revenue</span> to break even.
+                                </p>
+                                <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem;">
+                                    <strong>Monthly Target:</strong> £53,333.36 ÷ 12 months = <strong>£4,444.44/month</strong><br>
+                                    <strong>Weekly Target:</strong> £53,333.36 ÷ 52 weeks = <strong>£1,025.64/week</strong><br>
+                                    <strong>Daily Target (5 days):</strong> £1,025.64 ÷ 5 days = <strong>£205.13/day</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q3</div>
+                            Profit Target: Meals to Achieve £15,000 Profit
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1.5rem;">
+                                To achieve a <strong>target profit</strong>, we need to cover both fixed costs AND the desired profit amount.
+                            </p>
+
+                            <div class="formula-box">
+                                Units for Target Profit = (Fixed Costs + Target Profit) ÷ Contribution per Unit
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0;">
+                                <div class="step-indicator">1</div> <strong>Calculate Total Amount to Cover</strong>
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">FC: £30,000</div>
+                                <div class="visual-operator">+</div>
+                                <div class="visual-box">Target Profit: £15,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£45,000</div>
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0;">
+                                <div class="step-indicator">2</div> <strong>Calculate Required Units</strong>
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£45,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£4.50</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">10,000 meals</div>
+                            </div>
+
+                            <div class="qa-result" style="margin-top: 2rem;">
+                                ✓ Answer: <strong>10,000 meals</strong> must be sold to achieve £15,000 profit
+                            </div>
+
+                            <div style="margin-top: 2rem;">
+                                <h4 style="margin-bottom: 1rem;">Verification Calculation:</h4>
+                                <div style="background: var(--surface-light); padding: 1.5rem; border-radius: 0.5rem;">
+                                    <table style="width: 100%; color: var(--text-muted);">
+                                        <tr style="border-bottom: 1px solid var(--border);">
+                                            <td style="padding: 0.5rem;">Revenue (10,000 × £8)</td>
+                                            <td style="text-align: right; padding: 0.5rem;"><strong>£80,000</strong></td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--border);">
+                                            <td style="padding: 0.5rem;">Less: Variable Costs (10,000 × £3.50)</td>
+                                            <td style="text-align: right; padding: 0.5rem; color: var(--danger);">(£35,000)</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--border);">
+                                            <td style="padding: 0.5rem;"><strong>Contribution</strong></td>
+                                            <td style="text-align: right; padding: 0.5rem;"><strong>£45,000</strong></td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--border);">
+                                            <td style="padding: 0.5rem;">Less: Fixed Costs</td>
+                                            <td style="text-align: right; padding: 0.5rem; color: var(--danger);">(£30,000)</td>
+                                        </tr>
+                                        <tr style="background: var(--success); color: white;">
+                                            <td style="padding: 0.75rem; font-weight: 700;">Net Profit</td>
+                                            <td style="text-align: right; padding: 0.75rem; font-weight: 700;">£15,000 ✓</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.5rem; border-left: 3px solid var(--primary);">
+                                <strong>📊 Business Insights:</strong>
+                                <div style="margin-top: 1rem; color: var(--text-muted);">
+                                    <p style="margin-bottom: 0.5rem;">
+                                        • <strong>Additional meals needed:</strong> 10,000 - 6,667 = <span class="highlight">3,333 meals beyond break-even</span>
+                                    </p>
+                                    <p style="margin-bottom: 0.5rem;">
+                                        • <strong>Monthly target:</strong> 10,000 ÷ 12 = <span class="highlight">834 meals/month</span>
+                                    </p>
+                                    <p style="margin-bottom: 0.5rem;">
+                                        • <strong>Daily target (5 days/week, 260 days/year):</strong> 10,000 ÷ 260 = <span class="highlight">~39 meals/day</span>
+                                    </p>
+                                    <p style="margin-top: 1rem; font-weight: 600;">
+                                        Every meal sold after 6,667 generates <strong>£4.50 in pure profit</strong> since fixed costs are already covered!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 3rem 0 1.5rem;">Summary Comparison</h3>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Scenario</th>
+                                <th>Meals Required</th>
+                                <th>Annual Revenue</th>
+                                <th>Profit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Break-Even</strong></td>
+                                <td>6,667 meals</td>
+                                <td>£53,333.36</td>
+                                <td style="color: var(--text-muted);">£0</td>
+                            </tr>
+                            <tr style="background: rgba(16, 185, 129, 0.1);">
+                                <td><strong>£15,000 Profit Target</strong></td>
+                                <td><strong>10,000 meals</strong></td>
+                                <td><strong>£80,000</strong></td>
+                                <td style="color: var(--success);"><strong>£15,000</strong></td>
+                            </tr>
+                            <tr style="border-top: 2px solid var(--border);">
+                                <td><strong>Difference</strong></td>
+                                <td style="color: var(--primary);"><strong>+3,333 meals</strong></td>
+                                <td style="color: var(--primary);"><strong>+£26,666.64</strong></td>
+                                <td style="color: var(--primary);"><strong>+£15,000</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 1rem; color: white;">
+                    <h3 style="margin-bottom: 1rem;">🎯 Key Takeaways</h3>
+                    <div style="display: grid; gap: 1rem;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>1. Contribution Margin is Critical</strong><br>
+                            <span style="opacity: 0.9;">£4.50 per meal determines how quickly you cover fixed costs and generate profit.</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>2. Break-Even is Your Baseline</strong><br>
+                            <span style="opacity: 0.9;">6,667 meals = survival. Anything below = losses. Anything above = profit.</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>3. Scale Matters</strong><br>
+                            <span style="opacity: 0.9;">Need 50% more sales (10,000 vs 6,667) to earn £15,000 profit. Growth is essential for profitability.</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>4. Daily Operations</strong><br>
+                            <span style="opacity: 0.9;">~39 meals/day (5-day week) = £15K profit target. This makes goals tangible and trackable.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background: var(--surface); border: 2px solid var(--success); border-radius: 0.75rem;">
+                    <h4 style="color: var(--success); margin-bottom: 1rem;">✅ Homework Complete!</h4>
+                    <p style="color: var(--text-muted);">
+                        You've mastered break-even analysis and profit targeting. These concepts are fundamental to entrepreneurship and financial planning. Practice with different numbers to strengthen your understanding!
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all nav items and sections
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = this.dataset.section;
+                document.getElementById(sectionId).classList.add('active');
+            });
+        });
+
+        // Formula Steps Toggle
+        document.querySelectorAll('.formula-step').forEach(step => {
+            step.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+
+        // Accordion Toggle
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const item = this.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+
+        // Tabs
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const tabId = this.dataset.tab;
+                const tabContainer = this.closest('.tabs');
+                
+                // Remove active class from all buttons and contents
+                tabContainer.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                tabContainer.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding content
+                this.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Calculator
+        function calculateBEP() {
+            const fc = parseFloat(document.getElementById('fixedCosts').value);
+            const sp = parseFloat(document.getElementById('sellingPrice').value);
+            const vc = parseFloat(document.getElementById('variableCost').value);
+            const actualSales = parseFloat(document.getElementById('actualSales').value);
+
+            if (isNaN(fc) || isNaN(sp) || isNaN(vc)) {
+                alert('Please fill in Fixed Costs, Selling Price, and Variable Cost');
+                return;
+            }
+
+            const contribution = sp - vc;
+            const cmRatio = contribution / sp;
+            const bepUnits = fc / contribution;
+            const bepRevenue = fc / cmRatio;
+
+            let html = `
+                <div style="display: grid; gap: 1rem;">
+                    <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem;">
+                        <strong>Contribution per Unit:</strong> £${contribution.toFixed(2)}
+                    </div>
+                    <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem;">
+                        <strong>CM Ratio:</strong> ${(cmRatio * 100).toFixed(2)}%
+                    </div>
+                    <div style="padding: 1rem; background: var(--primary); color: white; border-radius: 0.5rem;">
+                        <strong>BEP in Units:</strong> ${bepUnits.toFixed(2)} units
+                    </div>
+                    <div style="padding: 1rem; background: var(--primary); color: white; border-radius: 0.5rem;">
+                        <strong>BEP in Revenue:</strong> £${bepRevenue.toFixed(2)}
+                    </div>
+            `;
+
+            if (!isNaN(actualSales)) {
+                const mos = actualSales - bepRevenue;
+                const mosPercent = (mos / actualSales) * 100;
+                html += `
+                    <div style="padding: 1rem; background: var(--success); color: white; border-radius: 0.5rem;">
+                        <strong>Margin of Safety:</strong> £${mos.toFixed(2)} (${mosPercent.toFixed(2)}%)
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+
+            document.getElementById('resultContent').innerHTML = html;
+            document.getElementById('calcResult').classList.add('show');
+        }
+    </script>
+</body>
+</html>
