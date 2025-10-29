@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial 4: Financial Ratios Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --liquidity: #3b82f6;
+            --solvency: #ef4444;
+            --efficiency: #f59e0b;
+            --profitability: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover {
+            background: var(--surface-light);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-description {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+        }
+
+        /* Ratio Cards */
+        .ratio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .ratio-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .ratio-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+        }
+
+        .ratio-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .ratio-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .ratio-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .ratio-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .ratio-formula {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        /* Scenario Box */
+        .scenario-box {
+            background: var(--surface);
+            border: 2px solid var(--primary);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .scenario-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .data-table {
+            width: 100%;
+            background: var(--background);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--surface-light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .data-table td:last-child {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* Accordion */
+        .accordion-item {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-item.active {
+            border-color: var(--primary);
+        }
+
+        .accordion-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .accordion-header:hover {
+            background: var(--surface-light);
+        }
+
+        .accordion-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .accordion-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--primary);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+
+        .accordion-toggle {
+            font-size: 1.25rem;
+            transition: transform 0.3s;
+        }
+
+        .accordion-item.active .accordion-toggle {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 5000px;
+        }
+
+        .accordion-body {
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Formula Box */
+        .formula-box {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.125rem;
+            font-weight: 600;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        /* Visual Calculation */
+        .visual-calc {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+            justify-content: center;
+        }
+
+        .visual-box {
+            background: var(--surface-light);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            border: 2px solid var(--border);
+            font-weight: 600;
+        }
+
+        .visual-operator {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .visual-result {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        /* Alert Boxes */
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--success);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            color: var(--success);
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid var(--warning);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            color: var(--warning);
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            color: var(--primary);
+        }
+
+        .danger-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid var(--danger);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            color: var(--danger);
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 2rem;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        /* Multiple Choice */
+        .mc-question {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mc-question-text {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .mc-options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .mc-option {
+            background: var(--surface-light);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mc-option:hover {
+            border-color: var(--primary);
+            background: var(--background);
+        }
+
+        .mc-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .mc-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .mc-label {
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .mc-option.correct .mc-label {
+            background: var(--success);
+        }
+
+        .mc-option.incorrect .mc-label {
+            background: var(--danger);
+        }
+
+        .mc-explanation {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--background);
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        .mc-option.selected .mc-explanation {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .ratio-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .visual-calc {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Tutorial 4</div>
+                <div class="sidebar-subtitle">Financial Ratios Analysis</div>
+            </div>
+
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-section-title">Overview</div>
+                    <div class="nav-item active" data-section="overview">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                        Ratio Categories
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Scenarios</div>
+                    <div class="nav-item" data-section="scenario1">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                        Global Gadgets Inc.
+                    </div>
+                    <div class="nav-item" data-section="scenario2">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                        </svg>
+                        BioPharma Labs
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Assessment</div>
+                    <div class="nav-item" data-section="mcq">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Multiple Choice
+                    </div>
+                    <div class="nav-item" data-section="homework">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        MediStore Exercise
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active">
+                <div class="page-header">
+                    <h1 class="page-title">Financial Ratios Analysis</h1>
+                    <p class="page-description">Master the four key categories of financial ratios for comprehensive business analysis</p>
+                </div>
+
+                <div class="ratio-grid">
+                    <div class="ratio-card">
+                        <div class="ratio-header">
+                            <div class="ratio-icon" style="background: var(--liquidity); color: white;">💧</div>
+                            <div class="ratio-title">Liquidity</div>
+                        </div>
+                        <div class="ratio-description">
+                            Measures a company's ability to meet short-term obligations with liquid assets
+                        </div>
+                        <ul style="color: var(--text-muted); font-size: 0.9rem; margin-left: 1.5rem;">
+                            <li>Current Ratio</li>
+                            <li>Quick Ratio (Acid-Test)</li>
+                        </ul>
+                        <div class="ratio-formula">
+                            Current = CA / CL<br>
+                            Quick = (CA - Inv) / CL
+                        </div>
+                    </div>
+
+                    <div class="ratio-card">
+                        <div class="ratio-header">
+                            <div class="ratio-icon" style="background: var(--solvency); color: white;">⚖️</div>
+                            <div class="ratio-title">Solvency</div>
+                        </div>
+                        <div class="ratio-description">
+                            Evaluates a company's ability to meet long-term debt obligations
+                        </div>
+                        <ul style="color: var(--text-muted); font-size: 0.9rem; margin-left: 1.5rem;">
+                            <li>Debt-to-Equity Ratio</li>
+                            <li>Debt-to-Assets Ratio</li>
+                        </ul>
+                        <div class="ratio-formula">
+                            D/E = Total Debt / Equity<br>
+                            D/A = Total Debt / Assets
+                        </div>
+                    </div>
+
+                    <div class="ratio-card">
+                        <div class="ratio-header">
+                            <div class="ratio-icon" style="background: var(--efficiency); color: white;">⚡</div>
+                            <div class="ratio-title">Efficiency</div>
+                        </div>
+                        <div class="ratio-description">
+                            Assesses how effectively a company uses its assets to generate revenue
+                        </div>
+                        <ul style="color: var(--text-muted); font-size: 0.9rem; margin-left: 1.5rem;">
+                            <li>Asset Turnover Ratio</li>
+                            <li>Inventory Turnover</li>
+                        </ul>
+                        <div class="ratio-formula">
+                            Asset TO = Revenue / Assets
+                        </div>
+                    </div>
+
+                    <div class="ratio-card">
+                        <div class="ratio-header">
+                            <div class="ratio-icon" style="background: var(--profitability); color: white;">💰</div>
+                            <div class="ratio-title">Profitability</div>
+                        </div>
+                        <div class="ratio-description">
+                            Measures a company's ability to generate profits from its operations
+                        </div>
+                        <ul style="color: var(--text-muted); font-size: 0.9rem; margin-left: 1.5rem;">
+                            <li>Return on Assets (ROA)</li>
+                            <li>Return on Equity (ROE)</li>
+                        </ul>
+                        <div class="ratio-formula">
+                            ROA = (NI / Assets) × 100<br>
+                            ROE = (NI / Equity) × 100
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <strong>💡 Key Insight:</strong> Financial ratios provide a standardized way to compare companies of different sizes and across different industries. They transform raw numbers into meaningful metrics for decision-making.
+                </div>
+            </section>
+
+            <!-- Scenario 1: Global Gadgets Inc. -->
+            <section id="scenario1" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">Scenario 1: Global Gadgets Inc.</h1>
+                    <p class="page-description">Liquidity Analysis - Current Ratio & Quick Ratio</p>
+                </div>
+
+                <div class="scenario-box">
+                    <div class="scenario-title">🏢 Company Overview</div>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        Global Gadgets Inc. is planning its inventory levels for the next quarter. Management wants to assess the company's current ability to meet its short-term debt without relying on selling stock.
+                    </p>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Account</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cash</td>
+                                <td>£15,000</td>
+                            </tr>
+                            <tr>
+                                <td>Accounts Receivable</td>
+                                <td>£30,000</td>
+                            </tr>
+                            <tr>
+                                <td>Inventory</td>
+                                <td>£25,000</td>
+                            </tr>
+                            <tr>
+                                <td>Accounts Payable</td>
+                                <td>£18,000</td>
+                            </tr>
+                            <tr>
+                                <td>Short-Term Bank Overdraft</td>
+                                <td>£12,000</td>
+                            </tr>
+                            <tr>
+                                <td>Long-Term Mortgage</td>
+                                <td>£50,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="info-box" style="margin-top: 1.5rem;">
+                        <strong>Important:</strong> Current Assets (CA) = £70,000 | Current Liabilities (CL) = £30,000 | Inventory = £25,000
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q1</div>
+                            Calculate Current Ratio
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Current Ratio = Current Assets / Current Liabilities
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 1: Identify Current Assets</h4>
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; margin-bottom: 1.5rem;">
+                                <div style="margin-bottom: 0.5rem;">✓ Cash: £15,000</div>
+                                <div style="margin-bottom: 0.5rem;">✓ Accounts Receivable: £30,000</div>
+                                <div style="margin-bottom: 0.5rem;">✓ Inventory: £25,000</div>
+                                <div style="border-top: 2px solid var(--primary); margin-top: 1rem; padding-top: 1rem; font-weight: 700; color: var(--primary);">
+                                    Total Current Assets = £70,000
+                                </div>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 2: Identify Current Liabilities</h4>
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; margin-bottom: 1.5rem;">
+                                <div style="margin-bottom: 0.5rem;">✓ Accounts Payable: £18,000</div>
+                                <div style="margin-bottom: 0.5rem;">✓ Short-Term Bank Overdraft: £12,000</div>
+                                <div style="margin-bottom: 0.5rem; color: var(--text-muted);">✗ Long-Term Mortgage: NOT included (non-current)</div>
+                                <div style="border-top: 2px solid var(--danger); margin-top: 1rem; padding-top: 1rem; font-weight: 700; color: var(--danger);">
+                                    Total Current Liabilities = £30,000
+                                </div>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 3: Calculate the Ratio</h4>
+                            <div class="visual-calc">
+                                <div class="visual-box">£70,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£30,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">2.33</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 2rem;">
+                                <strong>✓ Answer: Current Ratio = 2.33</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.9;">This means the company has £2.33 in current assets for every £1 of current liabilities.</p>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Is This Healthy?</h4>
+                            <div class="info-box">
+                                <strong>Yes! ✓</strong> A current ratio of 2.33 is considered very healthy. Here's why:
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Benchmark:</strong> A ratio of 1.5-3.0 is generally considered good</li>
+                                    <li><strong>Interpretation:</strong> The company can cover its short-term debts 2.33 times over</li>
+                                    <li><strong>Safety Margin:</strong> Even if some assets can't be quickly converted to cash, there's still a comfortable cushion</li>
+                                    <li><strong>Financial Health:</strong> Indicates strong liquidity and low short-term financial risk</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q2</div>
+                            Calculate Quick Ratio (Acid-Test Ratio)
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Quick Ratio = (Current Assets - Inventory) / Current Liabilities
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Why Exclude Inventory?</h4>
+                            <div class="warning-box" style="margin-bottom: 1.5rem;">
+                                <strong>⚡ Conservative Measure:</strong> The Quick Ratio provides a more stringent test of liquidity by excluding inventory, which may take time to sell and convert to cash. It measures immediate liquidity.
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 1: Calculate Quick Assets</h4>
+                            <div class="visual-calc">
+                                <div class="visual-box">CA: £70,000</div>
+                                <div class="visual-operator">−</div>
+                                <div class="visual-box">Inventory: £25,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£45,000</div>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; margin: 1.5rem 0;">
+                                <h4 style="margin-bottom: 1rem;">Quick Assets Breakdown:</h4>
+                                <div style="margin-bottom: 0.5rem;">✓ Cash: £15,000</div>
+                                <div style="margin-bottom: 0.5rem;">✓ Accounts Receivable: £30,000</div>
+                                <div style="margin-bottom: 0.5rem; color: var(--text-muted);">✗ Inventory: £25,000 (excluded)</div>
+                                <div style="border-top: 2px solid var(--primary); margin-top: 1rem; padding-top: 1rem; font-weight: 700; color: var(--primary);">
+                                    Total Quick Assets = £45,000
+                                </div>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 2: Calculate the Ratio</h4>
+                            <div class="visual-calc">
+                                <div class="visual-box">£45,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£30,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">1.5</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 2rem;">
+                                <strong>✓ Answer: Quick Ratio = 1.5</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.9;">The company has £1.50 in liquid assets for every £1 of current liabilities.</p>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Comparison: Current vs Quick Ratio</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>Current Ratio</th>
+                                        <th>Quick Ratio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Value</td>
+                                        <td>2.33</td>
+                                        <td>1.5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Includes Inventory</td>
+                                        <td>✓ Yes</td>
+                                        <td>✗ No</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Liquidity Test</td>
+                                        <td>General</td>
+                                        <td>Stricter</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Interpretation</td>
+                                        <td>Overall healthy</td>
+                                        <td>Strong immediate liquidity</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="info-box" style="margin-top: 1.5rem;">
+                                <strong>📊 Key Insight:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Quick Ratio of 1.0 or higher is generally considered good</li>
+                                    <li>At 1.5, Global Gadgets can meet all short-term obligations without selling inventory</li>
+                                    <li>The difference (2.33 - 1.5 = 0.83) represents the inventory cushion</li>
+                                    <li>Both ratios indicate excellent short-term financial health</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scenario 2: BioPharma Labs -->
+            <section id="scenario2" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">Scenario 2: BioPharma Labs</h1>
+                    <p class="page-description">Solvency & Profitability Analysis</p>
+                </div>
+
+                <div class="scenario-box">
+                    <div class="scenario-title">🧬 Company Overview</div>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        BioPharma Labs, a startup in a capital-intensive industry, reports the following year-end balances. A new investor is interested in the company's debt structure and asset utilization.
+                    </p>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Account</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Liabilities</td>
+                                <td>£150,000</td>
+                            </tr>
+                            <tr>
+                                <td>Total Equity</td>
+                                <td>£100,000</td>
+                            </tr>
+                            <tr>
+                                <td>Net Income</td>
+                                <td>£20,000</td>
+                            </tr>
+                            <tr>
+                                <td>Total Assets</td>
+                                <td>£250,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q1</div>
+                            Calculate Debt-to-Equity Ratio
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Debt-to-Equity Ratio = Total Liabilities / Total Equity
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">What Does This Ratio Measure?</h4>
+                            <div class="info-box" style="margin-bottom: 1.5rem;">
+                                The Debt-to-Equity ratio shows the proportion of debt financing relative to equity financing. It indicates how much the company relies on borrowed funds versus owner investment.
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Calculation:</h4>
+                            <div class="visual-calc">
+                                <div class="visual-box">£150,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£100,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">1.5</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 2rem;">
+                                <strong>✓ Answer: Debt-to-Equity Ratio = 1.5</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.9;">For every £1 of equity, the company has £1.50 in debt.</p>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">What Does a Ratio > 1 Mean?</h4>
+                            <div class="warning-box">
+                                <strong>⚠️ Interpretation:</strong> A ratio greater than 1 typically indicates:
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Higher Leverage:</strong> The company uses more debt than equity for financing</li>
+                                    <li><strong>Increased Risk:</strong> Greater financial risk due to debt obligations</li>
+                                    <li><strong>Industry Context:</strong> In capital-intensive industries (like biotech), ratios above 1 are common and acceptable</li>
+                                    <li><strong>Growth Stage:</strong> Startups often have higher ratios while building their business</li>
+                                    <li><strong>Interest Obligations:</strong> More debt means more interest payments, affecting profitability</li>
+                                </ul>
+                            </div>
+
+                            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--surface); border: 2px solid var(--border); border-radius: 0.75rem;">
+                                <h4 style="margin-bottom: 1rem;">Capital Structure Visualization:</h4>
+                                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                    <div style="flex: 1.5; background: var(--danger); padding: 1rem; border-radius: 0.5rem; text-align: center; color: white;">
+                                        <strong>Debt</strong><br>£150,000<br>(60%)
+                                    </div>
+                                    <div style="flex: 1; background: var(--success); padding: 1rem; border-radius: 0.5rem; text-align: center; color: white;">
+                                        <strong>Equity</strong><br>£100,000<br>(40%)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q2</div>
+                            Calculate Return on Assets (ROA)
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                ROA = (Net Income / Total Assets) × 100
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">What Does ROA Tell Investors?</h4>
+                            <div class="info-box" style="margin-bottom: 1.5rem;">
+                                <strong>Return on Assets (ROA)</strong> measures how efficiently a company uses its assets to generate profit. It shows how much profit is earned for each pound invested in assets.
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Calculation:</h4>
+                            <div class="visual-calc">
+                                <div class="visual-box">£20,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£250,000</div>
+                                <div class="visual-operator">×</div>
+                                <div class="visual-box">100</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">8.0%</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 2rem;">
+                                <strong>✓ Answer: Return on Assets = 8.0%</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.9;">The company generates £0.08 in profit for every £1 of assets.</p>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Investor Insights:</h4>
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem;">
+                                <strong style="color: var(--profitability);">What This 8.0% ROA Tells the Investor:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Asset Efficiency:</strong> Management is generating reasonable returns from the company's assets</li>
+                                    <li><strong>Profitability:</strong> For every £100 in assets, the company makes £8 in profit</li>
+                                    <li><strong>Benchmark:</strong> 5% or higher is generally considered good; 8% is solid</li>
+                                    <li><strong>Investment Returns:</strong> Helps compare with alternative investment opportunities</li>
+                                    <li><strong>Management Quality:</strong> Indicates effective use of resources</li>
+                                </ul>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 1.5rem;">
+                                <strong>💡 Context Matters:</strong> ROA should be compared to:
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Industry averages (capital-intensive industries typically have lower ROA)</li>
+                                    <li>Company's historical performance</li>
+                                    <li>Competitors in the same sector</li>
+                                    <li>Cost of borrowing (interest rates)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q3</div>
+                            Calculate Return on Equity (ROE)
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                ROE = (Net Income / Total Equity) × 100
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">What Does ROE Measure?</h4>
+                            <div class="info-box" style="margin-bottom: 1.5rem;">
+                                <strong>Return on Equity (ROE)</strong> measures the return generated on shareholders' investment. It's one of the most important metrics for equity investors as it shows profitability from the shareholders' perspective.
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Calculation:</h4>
+                            <div class="visual-calc">
+                                <div class="visual-box">£20,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£100,000</div>
+                                <div class="visual-operator">×</div>
+                                <div class="visual-box">100</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">20.0%</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 2rem;">
+                                <strong>✓ Answer: Return on Equity = 20.0%</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.9;">Shareholders earn £0.20 for every £1 invested in equity.</p>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">ROA vs ROE Comparison:</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>ROA</th>
+                                        <th>ROE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Value</td>
+                                        <td>8.0%</td>
+                                        <td>20.0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Denominator</td>
+                                        <td>Total Assets</td>
+                                        <td>Total Equity</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Perspective</td>
+                                        <td>All capital (debt + equity)</td>
+                                        <td>Shareholders only</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Interpretation</td>
+                                        <td>Asset efficiency</td>
+                                        <td>Shareholder returns</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="warning-box" style="margin-top: 1.5rem;">
+                                <strong>🔍 Why is ROE Higher than ROA?</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.9;">
+                                    ROE (20%) is significantly higher than ROA (8%) because of financial leverage. The company uses debt financing, which magnifies returns to equity holders. This is the effect of the 1.5 debt-to-equity ratio.
+                                </p>
+                            </div>
+
+                            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--surface); border: 2px solid var(--success); border-radius: 0.75rem;">
+                                <h4 style="margin-bottom: 1rem;">Overall Assessment for BioPharma Labs:</h4>
+                                <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong style="color: var(--profitability);">Strong ROE (20%):</strong> Excellent returns for shareholders</li>
+                                    <li><strong style="color: var(--profitability);">Solid ROA (8%):</strong> Good asset utilization</li>
+                                    <li><strong style="color: var(--warning);">Moderate Leverage (1.5):</strong> Reasonable for the industry, but requires monitoring</li>
+                                    <li><strong style="color: var(--success);">Profitable Operations:</strong> £20,000 net income demonstrates viability</li>
+                                    <li><strong style="color: var(--primary);">Investment Verdict:</strong> Attractive for growth-oriented investors who can accept moderate risk</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Multiple Choice Questions -->
+            <section id="mcq" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">Multiple Choice Assessment</h1>
+                    <p class="page-description">Test your understanding of financial ratios</p>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q3:</strong> Which ratio explicitly excludes Inventory from its calculation to provide a more conservative measure of short-term liquidity?
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>Current Ratio</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> The Current Ratio includes inventory as part of current assets.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">B</div>
+                            <div>Debt-to-Assets Ratio</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This is a solvency ratio that measures financial leverage, not liquidity.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">C</div>
+                            <div>Quick Ratio</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> The Quick Ratio (Acid-Test Ratio) explicitly excludes inventory to provide a more conservative measure of liquidity. Formula: (CA - Inventory) / CL
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>Asset Turnover Ratio</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This is an efficiency ratio that measures how well assets generate revenue.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q4:</strong> A Current Ratio of 0.8 means:
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>The company is highly profitable</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Current Ratio measures liquidity, not profitability.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">B</div>
+                            <div>The company relies heavily on debt</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This describes leverage, not liquidity. Debt-to-Equity ratio measures debt reliance.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">C</div>
+                            <div>The company has 80p of current assets for every £1 of current liabilities</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> A ratio of 0.8 means current assets are only 80% of current liabilities, indicating potential liquidity problems.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>The company generates 80p of revenue for every £1 of assets</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This would describe Asset Turnover Ratio, not Current Ratio.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q5:</strong> The Debt-to-Assets Ratio measures:
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>The efficiency of generating sales from assets</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This describes Asset Turnover Ratio.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">B</div>
+                            <div>The percentage of total assets financed by debt</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> Debt-to-Assets shows what proportion of assets are funded by borrowing. Formula: Total Debt / Total Assets
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">C</div>
+                            <div>The profit generated by shareholders' investment</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This describes Return on Equity (ROE).
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>The ability to pay long-term debt with current assets</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This would be a liquidity measure, not a solvency ratio.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q6:</strong> If a company has Net Income of £40,000 and Total Equity of £200,000, what is the Return on Equity (ROE)?
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>5.0%</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This would be the result if you divided £10,000 by £200,000.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">B</div>
+                            <div>10.0%</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This would be the result if you divided £20,000 by £200,000.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">C</div>
+                            <div>20.0%</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> ROE = (£40,000 / £200,000) × 100 = 20.0%
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>25.0%</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This would be the result if you divided £50,000 by £200,000.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q7:</strong> The Asset Turnover Ratio connects which two primary financial statements?
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>Balance Sheet (Assets) and Cash Flow Statement (Cash)</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Asset Turnover doesn't use cash flow data.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">B</div>
+                            <div>Income Statement (Revenue) and Balance Sheet (Total Assets)</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> Asset Turnover = Revenue / Total Assets. Revenue comes from the Income Statement, and Assets from the Balance Sheet.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">C</div>
+                            <div>Income Statement (Net Income) and Balance Sheet (Equity)</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This describes Return on Equity (ROE).
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>Cash Flow Statement and Equity</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Asset Turnover doesn't involve cash flow statement data.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q8:</strong> Which account is considered a Non-Current Liability?
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>Accounts Payable</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Accounts Payable is a current liability (due within 1 year).
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">B</div>
+                            <div>Accrued Expenses</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Accrued Expenses are current liabilities.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">C</div>
+                            <div>Long-Term Debt</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> Long-Term Debt is due beyond one year, making it a non-current liability.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>Unearned Revenue</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Unearned Revenue is typically a current liability.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box" style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 0.5rem;">📊 Answer Key</h3>
+                    <p style="opacity: 0.9;">Q3: C | Q4: C | Q5: B | Q6: C | Q7: B | Q8: C</p>
+                </div>
+            </section>
+
+            <!-- Homework: MediStore Pharma -->
+            <section id="homework" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">After-Tutorial Exercise</h1>
+                    <p class="page-description">MediStore Pharma - Comprehensive Ratio Analysis</p>
+                </div>
+
+                <div class="scenario-box">
+                    <div class="scenario-title">💊 MediStore Pharma</div>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        Complete a comprehensive financial analysis using all four categories of ratios
+                    </p>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Account</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Annual Sales Revenue</td>
+                                <td>£800,000</td>
+                            </tr>
+                            <tr>
+                                <td>Net Income</td>
+                                <td>£40,000</td>
+                            </tr>
+                            <tr>
+                                <td>Total Assets</td>
+                                <td>£400,000</td>
+                            </tr>
+                            <tr>
+                                <td>Total Liabilities</td>
+                                <td>£150,000</td>
+                            </tr>
+                            <tr>
+                                <td>Current Assets (CA)</td>
+                                <td>£250,000</td>
+                            </tr>
+                            <tr>
+                                <td>Inventory</td>
+                                <td>£50,000</td>
+                            </tr>
+                            <tr>
+                                <td>Current Liabilities (CL)</td>
+                                <td>£100,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">1</div>
+                            Liquidity Analysis
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h3 style="margin-bottom: 1.5rem; color: var(--liquidity);">💧 Liquidity Ratios</h3>
+
+                            <h4 style="margin-bottom: 1rem;">Current Ratio</h4>
+                            <div class="formula-box">
+                                Current Ratio = Current Assets / Current Liabilities
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£250,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£100,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">2.5</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Current Ratio = 2.5</strong>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Quick Ratio</h4>
+                            <div class="formula-box">
+                                Quick Ratio = (Current Assets - Inventory) / Current Liabilities
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£250,000 - £50,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£100,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">2.0</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Quick Ratio = 2.0</strong>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 2rem;">
+                                <strong>📊 Liquidity Assessment:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Both ratios are excellent (well above 1.0)</li>
+                                    <li>Current ratio of 2.5 shows strong ability to cover short-term obligations</li>
+                                    <li>Quick ratio of 2.0 indicates strong immediate liquidity even without inventory</li>
+                                    <li>Company has a healthy liquidity cushion</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">2</div>
+                            Solvency Analysis
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h3 style="margin-bottom: 1.5rem; color: var(--solvency);">⚖️ Solvency Ratios</h3>
+
+                            <div class="info-box" style="margin-bottom: 1.5rem;">
+                                <strong>First, calculate Total Equity:</strong><br>
+                                Total Equity = Total Assets - Total Liabilities<br>
+                                Total Equity = £400,000 - £150,000 = <strong>£250,000</strong>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Debt-to-Equity Ratio</h4>
+                            <div class="formula-box">
+                                Debt-to-Equity = Total Liabilities / Total Equity
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£150,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£250,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">0.6</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Debt-to-Equity Ratio = 0.6</strong>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Debt-to-Assets Ratio</h4>
+                            <div class="formula-box">
+                                Debt-to-Assets = Total Liabilities / Total Assets
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£150,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£400,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">0.375 or 37.5%</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Debt-to-Assets Ratio = 0.375 or 37.5%</strong>
+                            </div>
+
+                            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--surface); border: 2px solid var(--border); border-radius: 0.75rem;">
+                                <h4 style="margin-bottom: 1rem;">Capital Structure:</h4>
+                                <div style="display: flex; gap: 1rem;">
+                                    <div style="flex: 0.375; background: var(--danger); padding: 1rem; border-radius: 0.5rem; text-align: center; color: white;">
+                                        <strong>Debt</strong><br>37.5%
+                                    </div>
+                                    <div style="flex: 0.625; background: var(--success); padding: 1rem; border-radius: 0.5rem; text-align: center; color: white;">
+                                        <strong>Equity</strong><br>62.5%
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 2rem;">
+                                <strong>📊 Solvency Assessment:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Debt-to-Equity of 0.6 is conservative (less than 1.0)</li>
+                                    <li>Only 37.5% of assets are financed by debt</li>
+                                    <li>Strong equity base provides financial stability</li>
+                                    <li>Low financial risk and good capacity to take on additional debt if needed</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">3</div>
+                            Efficiency Analysis
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h3 style="margin-bottom: 1.5rem; color: var(--efficiency);">⚡ Efficiency Ratio</h3>
+
+                            <h4 style="margin-bottom: 1rem;">Asset Turnover Ratio</h4>
+                            <div class="formula-box">
+                                Asset Turnover = Annual Sales Revenue / Total Assets
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£800,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£400,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">2.0 times</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Asset Turnover Ratio = 2.0 times</strong>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 2rem;">
+                                <strong>📊 Efficiency Assessment:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>The company generates £2 in revenue for every £1 of assets</li>
+                                    <li>Asset base "turns over" twice per year through sales</li>
+                                    <li>Indicates efficient use of assets to generate revenue</li>
+                                    <li>A ratio of 2.0 is generally considered good, though benchmarks vary by industry</li>
+                                    <li>Higher ratios indicate better asset efficiency</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">4</div>
+                            Profitability Analysis
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h3 style="margin-bottom: 1.5rem; color: var(--profitability);">💰 Profitability Ratio</h3>
+
+                            <h4 style="margin-bottom: 1rem;">Return on Assets (ROA)</h4>
+                            <div class="formula-box">
+                                ROA = (Net Income / Total Assets) × 100
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£40,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£400,000</div>
+                                <div class="visual-operator">×</div>
+                                <div class="visual-box">100</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">10.0%</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Return on Assets (ROA) = 10.0%</strong>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 2rem;">
+                                <strong>📊 Profitability Assessment:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>10% ROA is excellent - company earns £10 for every £100 in assets</li>
+                                    <li>Demonstrates strong profitability and efficient asset management</li>
+                                    <li>Well above the typical 5% benchmark for good performance</li>
+                                    <li>Shows management is effectively using resources to generate profits</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, var(--success), var(--profitability)); border-radius: 1rem; color: white;">
+                    <h3 style="margin-bottom: 1.5rem;">🎯 Overall Assessment: MediStore Pharma</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Liquidity</strong><br>
+                            <span style="font-size: 1.5rem;">Excellent ✓</span><br>
+                            <small>CR: 2.5 | QR: 2.0</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Solvency</strong><br>
+                            <span style="font-size: 1.5rem;">Strong ✓</span><br>
+                            <small>D/E: 0.6 | D/A: 37.5%</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Efficiency</strong><br>
+                            <span style="font-size: 1.5rem;">Good ✓</span><br>
+                            <small>ATO: 2.0 times</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Profitability</strong><br>
+                            <span style="font-size: 1.5rem;">Excellent ✓</span><br>
+                            <small>ROA: 10.0%</small>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 0.75rem;">
+                        <strong>Investment Verdict:</strong>
+                        <p style="margin-top: 0.5rem; opacity: 0.95;">
+                            MediStore Pharma demonstrates exceptional financial health across all key metrics. The company shows strong liquidity to meet short-term obligations, conservative leverage with low financial risk, efficient asset utilization, and excellent profitability. This is an attractive investment opportunity with well-balanced financial fundamentals.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 1rem; color: white; text-align: center;">
+                    <h3 style="margin-bottom: 1rem;">🎓 Tutorial 4 Complete!</h3>
+                    <p style="opacity: 0.9; margin-bottom: 1.5rem;">You've mastered financial ratio analysis across all four key categories</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Liquidity</strong><br>
+                            <small>Current & Quick Ratios</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Solvency</strong><br>
+                            <small>D/E & D/A Ratios</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Efficiency</strong><br>
+                            <small>Asset Turnover</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Profitability</strong><br>
+                            <small>ROA & ROE</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                this.classList.add('active');
+                
+                const sectionId = this.dataset.section;
+                document.getElementById(sectionId).classList.add('active');
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Accordion Toggle
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const item = this.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+
+        // Multiple Choice Selection
+        document.querySelectorAll('.mc-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from siblings
+                const siblings = this.parentElement.querySelectorAll('.mc-option');
+                siblings.forEach(sib => sib.classList.remove('selected', 'incorrect'));
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Show incorrect styling if wrong answer
+                if (this.dataset.answer === 'wrong') {
+                    this.classList.add('incorrect');
+                }
+            });
+        });
+
+        // Ratio card hover effects
+        document.querySelectorAll('.ratio-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
