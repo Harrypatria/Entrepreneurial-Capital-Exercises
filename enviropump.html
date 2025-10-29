@@ -1,0 +1,2717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnviroPump Case Study Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --kft: #3b82f6;
+            --kefton: #8b5cf6;
+            --zkl: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover {
+            background: var(--surface-light);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-description {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 1rem;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-box {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .vc-comparison {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .vc-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            transition: transform 0.3s;
+        }
+
+        .vc-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        }
+
+        .vc-card.kft {
+            border-color: var(--kft);
+        }
+
+        .vc-card.kft::before {
+            background: var(--kft);
+        }
+
+        .vc-card.kefton {
+            border-color: var(--kefton);
+        }
+
+        .vc-card.kefton::before {
+            background: var(--kefton);
+        }
+
+        .vc-card.zkl {
+            border-color: var(--zkl);
+        }
+
+        .vc-card.zkl::before {
+            background: var(--zkl);
+        }
+
+        .vc-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .vc-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .vc-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-best {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-risky {
+            background: var(--danger);
+            color: white;
+        }
+
+        .badge-moderate {
+            background: var(--warning);
+            color: white;
+        }
+
+        .vc-offer {
+            background: var(--surface-light);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .vc-metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .vc-metric:last-child {
+            border-bottom: none;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .pro-list, .con-list {
+            background: var(--surface-light);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .pro-list {
+            border-left: 3px solid var(--success);
+        }
+
+        .con-list {
+            border-left: 3px solid var(--danger);
+        }
+
+        .list-title {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pros-cons li {
+            margin-left: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+
+        .accordion-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .accordion-header:hover {
+            background: var(--surface-light);
+        }
+
+        .accordion-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .accordion-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .accordion-toggle {
+            transition: transform 0.3s;
+            color: var(--text-muted);
+        }
+
+        .accordion-item.active .accordion-toggle {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 5000px;
+        }
+
+        .accordion-body {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .comparison-table {
+            background: var(--surface);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: var(--surface-light);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .info-box {
+            padding: 1.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .success-box {
+            padding: 1.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--success);
+            border-radius: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .warning-box {
+            padding: 1.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid var(--warning);
+            border-radius: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .danger-box {
+            padding: 1.5rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid var(--danger);
+            border-radius: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .visual-calc {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+
+        .visual-box {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            background: var(--surface-light);
+            border: 2px solid var(--border);
+        }
+
+        .visual-operator {
+            color: var(--secondary);
+            font-size: 1.5rem;
+        }
+
+        .visual-result {
+            padding: 0.75rem 1.25rem;
+            background: var(--success);
+            color: white;
+            border-radius: 0.5rem;
+            font-weight: 700;
+        }
+
+        .formula-box {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid var(--primary);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.125rem;
+        }
+
+        .recommendation-card {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin: 2rem 0;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 0;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--background);
+        }
+
+        .timeline-content {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .decision-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .matrix-item {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .matrix-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .matrix-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .vc-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">EnviroPump Case</div>
+                <div class="sidebar-subtitle">Venture Capital Analysis</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Case Overview</div>
+                <div class="nav-item active" data-section="overview">
+                    <span>📊</span>
+                    <span>Situation Analysis</span>
+                </div>
+                <div class="nav-item" data-section="financial">
+                    <span>💰</span>
+                    <span>Financial Projections</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">VC Offers</div>
+                <div class="nav-item" data-section="kft">
+                    <span>🔵</span>
+                    <span>KFT Capital</span>
+                </div>
+                <div class="nav-item" data-section="kefton">
+                    <span>🟣</span>
+                    <span>Kefton Capital</span>
+                </div>
+                <div class="nav-item" data-section="zkl">
+                    <span>🟢</span>
+                    <span>ZKL Ventures</span>
+                </div>
+                <div class="nav-item" data-section="comparison">
+                    <span>⚖️</span>
+                    <span>Side-by-Side</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Discussion Questions</div>
+                <div class="nav-item" data-section="q1">
+                    <span>Q1</span>
+                    <span>Self-Financing</span>
+                </div>
+                <div class="nav-item" data-section="q2">
+                    <span>Q2</span>
+                    <span>Bootstrap Decision</span>
+                </div>
+                <div class="nav-item" data-section="q3">
+                    <span>Q3</span>
+                    <span>Units to Sell</span>
+                </div>
+                <div class="nav-item" data-section="q4">
+                    <span>Q4</span>
+                    <span>Final Decision</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <!-- Overview Section -->
+            <section class="content-section active" id="overview">
+                <div class="page-header">
+                    <h1 class="page-title">EnviroPump: The Crisis</h1>
+                    <p class="page-description">A cash-strapped entrepreneur faces a critical financing decision</p>
+                </div>
+
+                <div class="hero-card">
+                    <h2 style="margin-bottom: 1rem;">⏰ Critical Situation</h2>
+                    <p style="opacity: 0.9; margin-bottom: 1.5rem;">
+                        Tia Lutz has <strong>2-3 weeks</strong> before EnviroPump runs out of cash. She must choose one of three imperfect VC offers within 24 hours.
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Cash Remaining</div>
+                            <div class="stat-value">$20,000</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Initial Investment</div>
+                            <div class="stat-value">$200,000</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Months Operating</div>
+                            <div class="stat-value">~12 months</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Capital Needed</div>
+                            <div class="stat-value">$1M+</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">The Story Timeline</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <strong>December 2014</strong><br>
+                            Tia Lutz incorporates EnviroPump after successful prototype testing. Pool stores are enthusiastic—could save owners $700/year in electricity.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <strong>June 2015</strong><br>
+                            Lutz quits her engineering job to focus full-time on EnviroPump. Decides to bootstrap with $200,000 personal savings to maintain complete control.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <strong>March 2015</strong><br>
+                            Hires Sam Kelton as lead engineer. Progress is good initially.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <strong>8 Months Later</strong><br>
+                            Things go wrong. Prototype not finalized. Already burned $160,000 (expected: $100,000). Patents delayed. No distribution established.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <strong>December 2015 - Crisis</strong><br>
+                            Only $20,000 left. Nowhere near market-ready. Needs $1M minimum to survive next year. Must raise capital immediately.
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <strong>Now - Decision Time</strong><br>
+                            After contacting 400+ investors, received 3 offers. Must decide within 24 hours or company goes under.
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">The Product: EnviroPump</h3>
+                <div class="info-box">
+                    <h4 style="margin-bottom: 1rem;">💡 Innovation</h4>
+                    <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                        <li>Floating solar-powered pool pump and filter</li>
+                        <li>Only requires two 150-watt solar panels (3ft × 4ft total)</li>
+                        <li>Almost eliminates need for regular electric pump</li>
+                        <li>Saves pool owners $700+/year in electricity</li>
+                        <li>Retail price: ~$800 (competitors cost $8,500+)</li>
+                        <li>Manufacturing cost: $350/unit</li>
+                    </ul>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">Capital Requirements Breakdown</h3>
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Amount Needed</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Legal/Patents</td>
+                                <td><strong>$150,000</strong></td>
+                                <td>Obtaining and filing patents</td>
+                            </tr>
+                            <tr>
+                                <td>Development</td>
+                                <td><strong>$150,000</strong></td>
+                                <td>Finalizing prototype</td>
+                            </tr>
+                            <tr>
+                                <td>Marketing</td>
+                                <td><strong>$200,000</strong></td>
+                                <td>Market launch and promotion</td>
+                            </tr>
+                            <tr>
+                                <td>Manufacturing Setup</td>
+                                <td><strong>$400,000</strong></td>
+                                <td>Contract manufacturer setup</td>
+                            </tr>
+                            <tr>
+                                <td>Salaries</td>
+                                <td><strong>$100,000</strong></td>
+                                <td>Team compensation</td>
+                            </tr>
+                            <tr style="background: var(--surface-light); font-weight: 700;">
+                                <td>TOTAL</td>
+                                <td>$1,000,000</td>
+                                <td>Minimum to survive 1 year</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ The Dilemma</strong>
+                    <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                        Lutz asked for $1.5M (with $500K buffer), but none of the offers are perfect. Each has significant trade-offs in terms of equity, milestones, timing, and risk.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Financial Projections Section -->
+            <section class="content-section" id="financial">
+                <div class="page-header">
+                    <h1 class="page-title">Financial Projections</h1>
+                    <p class="page-description">Year 5 revenue and profit analysis</p>
+                </div>
+
+                <div class="info-box">
+                    <h3 style="margin-bottom: 1rem;">Market Opportunity</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div>
+                            <strong>US Market</strong><br>
+                            <span style="color: var(--text-muted);">10 million pools<br>6,000+ pool stores</span>
+                        </div>
+                        <div>
+                            <strong>Global Market</strong><br>
+                            <span style="color: var(--text-muted);">12 million additional pools<br>Substantial expansion potential</span>
+                        </div>
+                        <div>
+                            <strong>Target Penetration</strong><br>
+                            <span style="color: var(--text-muted);">1,500 stores<br>50 units per store/year</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">Year 5 Projection</h3>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">📊</div>
+                            Revenue Calculation
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Target Units × Price per Unit = Total Revenue
+                            </div>
+                            <div class="visual-calc">
+                                <div class="visual-box">75,000 units</div>
+                                <div class="visual-operator">×</div>
+                                <div class="visual-box">$800/unit</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">$60,000,000</div>
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--text-muted);">
+                                Based on reaching 1,500 pool stores, with each store selling 50 units/year.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">💵</div>
+                            Cost Structure
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h4 style="margin-bottom: 1rem;">Production Costs</h4>
+                            <div class="visual-calc">
+                                <div class="visual-box">75,000 units</div>
+                                <div class="visual-operator">×</div>
+                                <div class="visual-box">$350/unit</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">$26,250,000</div>
+                            </div>
+
+                            <h4 style="margin: 1.5rem 0 1rem;">Administrative Costs</h4>
+                            <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Salaries</span>
+                                    <strong>$2,000,000</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Office & R&D Facility</span>
+                                    <strong>$1,000,000</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid var(--border);">
+                                    <span>Miscellaneous</span>
+                                    <strong>$500,000</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 2px solid var(--border); font-weight: 700;">
+                                    <span>Total Admin</span>
+                                    <strong>$3,500,000</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">✅</div>
+                            Profit Calculation
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="comparison-table">
+                                <table>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Total Revenue</strong></td>
+                                            <td style="text-align: right;"><strong>$60,000,000</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Less: Production Costs</td>
+                                            <td style="text-align: right; color: var(--danger);">($26,250,000)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Less: Admin Costs</td>
+                                            <td style="text-align: right; color: var(--danger);">($3,500,000)</td>
+                                        </tr>
+                                        <tr style="background: var(--success); color: white; font-weight: 700; font-size: 1.125rem;">
+                                            <td>Net Profit (Year 5)</td>
+                                            <td style="text-align: right;">$30,250,000</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <h4 style="margin-bottom: 0.5rem;">🎯 Potential Valuation</h4>
+                                <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                                    Similar niche technology companies sell for 7-10× annual profit multiples.
+                                </p>
+                                <div class="visual-calc">
+                                    <div class="visual-box">$30.25M profit</div>
+                                    <div class="visual-operator">×</div>
+                                    <div class="visual-box">7-10× multiple</div>
+                                    <div class="visual-operator">=</div>
+                                    <div class="visual-result">$182M-$260M</div>
+                                </div>
+                                <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.875rem;">
+                                    <strong>Note:</strong> This is a 5-year projection. Current valuation is far lower as the company hasn't sold a single unit yet.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <h4 style="margin-bottom: 0.5rem;">📈 Current Valuation</h4>
+                    <p style="color: var(--text-muted);">
+                        Lutz researched similar startups on Crunchbase and determined a <strong>pre-money valuation of $6.5M</strong> was reasonable. Most comparable companies received $1-3M for 20-30% equity stakes.
+                    </p>
+                </div>
+            </section>
+
+            <!-- KFT Capital Section -->
+            <section class="content-section" id="kft">
+                <div class="page-header">
+                    <h1 class="page-title">KFT Capital Offer</h1>
+                    <p class="page-description">Minneapolis-based VC firm</p>
+                </div>
+
+                <div class="vc-card kft" style="max-width: 800px;">
+                    <div class="vc-header">
+                        <div class="vc-name" style="color: var(--kft);">KFT Capital</div>
+                        <div class="vc-badge badge-moderate">Moderate Risk</div>
+                    </div>
+                    
+                    <div class="vc-offer">
+                        <div class="vc-metric">
+                            <span>Investment Amount</span>
+                            <strong style="color: var(--kft);">$1,000,000</strong>
+                        </div>
+                        <div class="vc-metric">
+                            <span>Equity Stake</span>
+                            <strong>25%</strong>
+                        </div>
+                        <div class="vc-metric">
+                            <span>Type</span>
+                            <strong>Convertible Stock (2% interest)</strong>
+                        </div>
+                        <div class="vc-metric">
+                            <span>Board Seats</span>
+                            <strong>1 of 5</strong>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">Staging Schedule</h4>
+                    <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Upfront</span>
+                            <strong>$250,000</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>After 6 months</span>
+                            <strong>$250,000</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>After 12 months</span>
+                            <strong>$250,000</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>After 18 months</span>
+                            <strong>$250,000</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box" style="margin-top: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">⚠️ Critical Milestones (Covenants)</h4>
+                    <ol style="margin-left: 1.5rem; color: var(--text-muted);">
+                        <li style="margin-bottom: 0.5rem;"><strong>3 patents fully filed</strong> within 6 months</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Final prototype completed and in production</strong> within 6 months</li>
+                        <li><strong>$1 million in sales</strong> by end of year one</li>
+                    </ol>
+                    <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.875rem;">
+                        <strong>Risk:</strong> If milestones aren't met, KFT could withhold subsequent funding rounds.
+                    </p>
+                </div>
+
+                <div class="pros-cons">
+                    <div class="pro-list">
+                        <div class="list-title">
+                            <span style="color: var(--success);">✓</span> Pros
+                        </div>
+                        <ul>
+                            <li><strong>Excellent reputation</strong> - Well-regarded in VC community</li>
+                            <li><strong>"Smart money"</strong> - Strategic advice + network access</li>
+                            <li><strong>Positive portfolio reviews</strong> - All 9 firms gave glowing reviews</li>
+                            <li><strong>$50K bridge loan available</strong> - Within 1 week to cover immediate needs</li>
+                            <li><strong>Fast funding</strong> - First $250K within 1 month</li>
+                            <li><strong>Reasonable board control</strong> - Only 1 of 5 seats</li>
+                            <li><strong>Track record</strong> - Never let portfolio firms run out of cash</li>
+                            <li><strong>Moderate milestones</strong> - Challenging but achievable</li>
+                        </ul>
+                    </div>
+                    <div class="con-list">
+                        <div class="list-title">
+                            <span style="color: var(--danger);">✗</span> Cons
+                        </div>
+                        <ul>
+                            <li><strong>Lowest funding amount</strong> - Only $1M (asked for $1.5M)</li>
+                            <li><strong>Highest equity dilution</strong> - 25% stake (vs 15% from others)</li>
+                            <li><strong>Staged funding risk</strong> - Must meet milestones or risk losing later rounds</li>
+                            <li><strong>$1M sales target</strong> - Aggressive for year one (1,250 units)</li>
+                            <li><strong>No buffer</strong> - Exactly minimum needed, zero room for error</li>
+                            <li><strong>Production deadline pressure</strong> - 6 months to get to market</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <h4 style="margin-bottom: 0.5rem;">💼 About KFT Capital</h4>
+                    <p style="color: var(--text-muted);">
+                        Midsize VC firm based in Minneapolis. Known for hands-on support and strategic guidance. Management emphasized they've never let a portfolio company's cash dry up, as it would destroy their own investment.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Kefton Capital Section -->
+            <section class="content-section" id="kefton">
+                <div class="page-header">
+                    <h1 class="page-title">Kefton Capital Offer</h1>
+                    <p class="page-description">New York-based billion-dollar fund</p>
+                </div>
+
+                <div class="vc-card kefton" style="max-width: 800px;">
+                    <div class="vc-header">
+                        <div class="vc-name" style="color: var(--kefton);">Kefton Capital</div>
+                        <div class="vc-badge badge-risky">High Risk</div>
+                    </div>
+                    
+                    <div class="vc-offer">
+                        <div class="vc-metric">
+                            <span>Investment Amount</span>
+                            <strong style="color: var(--kefton);">$1,500,000</strong>
+                        </div>
+                        <div class="vc-metric">
+                            <span>Equity Stake</span>
+                            <strong>15%</strong>
+                        </div>
+                        <div class="vc-metric">
+                            <span>Type</span>
+                            <strong>Preferred Equity</strong>
+                        </div>
+                        <div class="vc-metric">
+                            <span>Board Seats</span>
+                            <strong style="color: var(--danger);">2 of 5</strong>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">Staging Schedule</h4>
+                    <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Upfront</span>
+                            <strong>$500,000</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Stage 2</span>
+                            <strong>$250,000</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Stage 3</span>
+                            <strong>$250,000</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Stage 4</span>
+                            <strong>$250,000</strong>
+                        </div>
+                        <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                            Over 18-month period
+                        </p>
+                    </div>
+                </div>
+
+                <div class="danger-box" style="margin-top: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">🚨 AGGRESSIVE Milestones</h4>
+                    <ol style="margin-left: 1.5rem; color: var(--text-muted);">
+                        <li style="margin-bottom: 0.5rem;"><strong>Production must commence</strong> within 6 months</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Distribution to 500 pool stores</strong> within 6 months</li>
+                        <li><strong>$2 million in sales</strong> within one year (2,500 units!)</li>
+                    </ol>
+                    <p style="margin-top: 1rem; font-weight: 700;">
+                        ⚠️ Lutz is NOT confident these can be achieved
+                    </p>
+                </div>
+
+                <div class="danger-box">
+                    <h4 style="margin-bottom: 1rem;">⚠️ CRITICAL REPUTATION CONCERNS</h4>
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <strong style="color: white;">Horror Story Example:</strong>
+                        <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                            Kefton withheld investment payment over a <em>technicality</em>, then demanded <strong>3× the original equity</strong>. Portfolio firm was desperate and gave in. Kefton took control and <strong>fired most of top management</strong>.
+                        </p>
+                    </div>
+                    <p style="color: var(--text-muted);">
+                        Known for "cash starving" portfolio firms to renegotiate better terms. However, several other portfolio firms said Kefton was actually good to work with—mixed reviews create uncertainty.
+                    </p>
+                </div>
+
+                <div class="pros-cons">
+                    <div class="pro-list">
+                        <div class="list-title">
+                            <span style="color: var(--success);">✓</span> Pros
+                        </div>
+                        <ul>
+                            <li><strong>Full requested amount</strong> - $1.5M covers needs + buffer</li>
+                            <li><strong>Low equity dilution</strong> - Only 15% (10% less than KFT)</li>
+                            <li><strong>Billion-dollar fund</strong> - Deep pockets for follow-on rounds</li>
+                            <li><strong>Largest upfront</strong> - $500K immediately</li>
+                            <li><strong>Fast completion</strong> - Due diligence done in 3 weeks</li>
+                            <li><strong>Tech startup expertise</strong> - Focus on technology companies</li>
+                            <li><strong>Some positive reviews</strong> - Not all experiences were bad</li>
+                        </ul>
+                    </div>
+                    <div class="con-list">
+                        <div class="list-title">
+                            <span style="color: var(--danger);">✗</span> Cons
+                        </div>
+                        <ul>
+                            <li><strong>EXTREMELY aggressive milestones</strong> - $2M sales in year 1</li>
+                            <li><strong>Dangerous reputation</strong> - Known for hostile tactics</li>
+                            <li><strong>2 board seats</strong> - Could gain control with one ally</li>
+                            <li><strong>"Trojan horse" risk</strong> - Board seats used to take over companies</li>
+                            <li><strong>Withholding tactics</strong> - May use technicalities to renegotiate</li>
+                            <li><strong>Management turnover risk</strong> - Lutz could lose her company</li>
+                            <li><strong>500 stores in 6 months</strong> - Distribution challenge</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="warning-box" style="margin-top: 2rem;">
+                    <h4 style="margin-bottom: 0.5rem;">⚠️ The Trojan Horse Concern</h4>
+                    <p style="color: var(--text-muted);">
+                        With 2 of 5 board seats, Kefton would only need to convince ONE other board member to have voting control. Combined with their reputation for aggressive tactics, this is deeply concerning for Lutz who values control of her company.
+                    </p>
+                </div>
+            </section>
+
+            <!-- ZKL Ventures Section -->
+            <section class="content-section" id="zkl">
+                <div class="page-header">
+                    <h1 class="page-title">ZKL Ventures Offer</h1>
+                    <p class="page-description">Dubai-based investment firm</p>
+                </div>
+
+                <div class="vc-card zkl" style="max-width: 800px;">
+                    <div class="vc-header">
+                        <div class="vc-name" style="color: var(--zkl);">ZKL Ventures</div>
+                        <div class="vc-badge badge-best">Best Terms</div>
+                    </div>
+                    
+                    <div class="vc-offer">
+                        <div class="vc-metric">
+                            <span>Investment Amount</span>
+                            <strong style="color: var(--zkl);">$2,000,000</strong>
+                        </div>
+                        <div class="vc-metric">
+                            <span>Equity Stake</span>
+                            <strong>15%</strong>
+                        </div>
+                        <div class="vc-metric">
+                            <span>Type</span>
+                            <strong>Preferred Equity</strong>
+                        </div>
+                        <div class="vc-metric">
+                            <span>Board Seats</span>
+                            <strong>Not specified</strong>
+                        </div>
+                        <div class="vc-metric">
+                            <span>Exclusivity</span>
+                            <strong style="color: var(--warning);">Must be sole investor</strong>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 1.5rem 0 1rem;">Staging Schedule</h4>
+                    <div style="background: var(--surface-light); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span>Initial Investment</span>
+                            <strong style="color: var(--zkl);">$1,000,000</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Second Investment</span>
+                            <strong style="color: var(--zkl);">$1,000,000</strong>
+                        </div>
+                        <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                            Only ONE milestone to unlock second million
+                        </p>
+                    </div>
+                </div>
+
+                <div class="success-box" style="margin-top: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">✅ Simple Milestone</h4>
+                    <div style="font-size: 1.125rem; margin: 1rem 0;">
+                        <strong>Achieve $500,000 in sales by end of year one</strong>
+                    </div>
+                    <p style="color: var(--text-muted);">
+                        This requires selling only <strong>625 units</strong> at $800 each—far more achievable than the other offers.
+                    </p>
+                </div>
+
+                <div class="warning-box">
+                    <h4 style="margin-bottom: 1rem;">⚠️ Major Concerns</h4>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <strong style="display: block; margin-bottom: 0.5rem; color: var(--warning);">1. Communication Issues</strong>
+                        <p style="color: var(--text-muted);">
+                            After initial interest, ZKL went <strong>completely silent for over a month</strong> despite many emails and calls from Lutz. Then suddenly sent term sheet "out of the blue." Major red flag for ongoing relationship.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <strong style="display: block; margin-bottom: 0.5rem; color: var(--warning);">2. Timing Uncertainty</strong>
+                        <p style="color: var(--text-muted);">
+                            ZKL said they'll get the initial $1M "very quickly" but <strong>didn't specify exactly when</strong>. If it takes more than a few weeks, EnviroPump goes under. This is the most immediate existential risk.
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <strong style="display: block; margin-bottom: 0.5rem; color: var(--warning);">3. Limited Due Diligence Possible</strong>
+                        <p style="color: var(--text-muted);">
+                            • Overseas firm (Dubai) - harder to verify<br>
+                            • Registered with UAE government as investment house<br>
+                            • Invested in 12 companies (mostly Gulf region)<br>
+                            • Only reached ONE portfolio company<br>
+                            • That company gave neither good nor bad info<br>
+                            • Can't verify track record or reputation
+                        </p>
+                    </div>
+
+                    <div>
+                        <strong style="display: block; margin-bottom: 0.5rem; color: var(--warning);">4. Exclusivity Clause</strong>
+                        <p style="color: var(--text-muted);">
+                            Term sheet makes it <strong>extremely difficult to work with other investors</strong>. Also, if EnviroPump rejects this offer, ZKL states they will NOT invest in the future. This is a "take it or leave it forever" situation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pros-cons">
+                    <div class="pro-list">
+                        <div class="list-title">
+                            <span style="color: var(--success);">✓</span> Pros
+                        </div>
+                        <ul>
+                            <li><strong>HIGHEST funding</strong> - $2M (33% more than asked)</li>
+                            <li><strong>Lowest equity</strong> - Only 15% for the most money</li>
+                            <li><strong>Best value</strong> - $2M for 15% vs $1M for 25% (KFT)</li>
+                            <li><strong>Easiest milestone</strong> - Only $500K sales (625 units)</li>
+                            <li><strong>Only ONE milestone</strong> - Not three like others</li>
+                            <li><strong>Largest upfront</strong> - $1M initial (if timing works out)</li>
+                            <li><strong>Significant buffer</strong> - $1M cushion above needs</li>
+                            <li><strong>Want to be sole partner</strong> - Committed to success</li>
+                        </ul>
+                    </div>
+                    <div class="con-list">
+                        <div class="list-title">
+                            <span style="color: var(--danger);">✗</span> Cons
+                        </div>
+                        <ul>
+                            <li><strong>COMMUNICATION FAILURE</strong> - Silent for a month</li>
+                            <li><strong>Timing undefined</strong> - May not get cash in time</li>
+                            <li><strong>Death sentence risk</strong> - Could go under waiting</li>
+                            <li><strong>Overseas firm</strong> - Distance complicates everything</li>
+                            <li><strong>Can't verify reputation</strong> - Minimal portfolio contact</li>
+                            <li><strong>Exclusivity requirement</strong> - Blocks other investors</li>
+                            <li><strong>"Now or never"</strong> - Won't invest if rejected</li>
+                            <li><strong>Unknown firm</strong> - Limited info available</li>
+                            <li><strong>Cultural/time zone issues</strong> - Ongoing concern</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="danger-box" style="margin-top: 2rem;">
+                    <h4 style="margin-bottom: 0.5rem;">🚨 Critical Risk Assessment</h4>
+                    <p style="color: var(--text-muted);">
+                        ZKL has the <strong>best terms on paper</strong>, but the <strong>highest execution risk</strong>. If the funding doesn't arrive within 2-3 weeks, EnviroPump is dead. The month-long communication blackout is a massive red flag. Can Lutz trust they'll deliver when she needs them most?
+                    </p>
+                </div>
+            </section>
+
+            <!-- Comparison Section -->
+            <section class="content-section" id="comparison">
+                <div class="page-header">
+                    <h1 class="page-title">Side-by-Side Comparison</h1>
+                    <p class="page-description">All three VC offers analyzed</p>
+                </div>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Factor</th>
+                                <th style="color: var(--kft);">KFT Capital</th>
+                                <th style="color: var(--kefton);">Kefton Capital</th>
+                                <th style="color: var(--zkl);">ZKL Ventures</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Total Investment</strong></td>
+                                <td>$1,000,000</td>
+                                <td>$1,500,000</td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>$2,000,000 ✓</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Equity Given Up</strong></td>
+                                <td style="background: rgba(239, 68, 68, 0.1);">25% ✗</td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>15% ✓</strong></td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>15% ✓</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Value ($/Equity)</strong></td>
+                                <td>$4M per 1%</td>
+                                <td>$10M per 1%</td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>$13.3M per 1% ✓</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Initial Payment</strong></td>
+                                <td>$250,000</td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>$500,000 ✓</strong></td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>$1,000,000 ✓✓</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Timing to First $</strong></td>
+                                <td>1 month</td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>3 weeks ✓</strong></td>
+                                <td style="background: rgba(239, 68, 68, 0.1);">Undefined ✗</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bridge Loan</strong></td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>$50K in 1 week ✓</strong></td>
+                                <td>No</td>
+                                <td>No</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Year 1 Sales Target</strong></td>
+                                <td>$1M (1,250 units)</td>
+                                <td style="background: rgba(239, 68, 68, 0.1);">$2M (2,500 units) ✗</td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>$500K (625 units) ✓</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Milestones</strong></td>
+                                <td>3 milestones</td>
+                                <td style="background: rgba(239, 68, 68, 0.1);">3 milestones (aggressive) ✗</td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>1 milestone ✓</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Board Seats</strong></td>
+                                <td style="background: rgba(16, 185, 129, 0.1);">1 of 5 ✓</td>
+                                <td style="background: rgba(239, 68, 68, 0.1);">2 of 5 ✗</td>
+                                <td>Not specified</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reputation</strong></td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>Excellent ✓</strong></td>
+                                <td style="background: rgba(239, 68, 68, 0.1);">Mixed/Concerning ✗</td>
+                                <td style="background: rgba(245, 158, 11, 0.1);">Unknown ⚠</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Communication</strong></td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>Responsive ✓</strong></td>
+                                <td>Professional</td>
+                                <td style="background: rgba(239, 68, 68, 0.1);">Poor (1 month silence) ✗</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Due Diligence</strong></td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>Verified 9 portfolio firms ✓</strong></td>
+                                <td>Some portfolio contact</td>
+                                <td style="background: rgba(239, 68, 68, 0.1);">Only 1 firm contacted ✗</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Overall Risk</strong></td>
+                                <td style="background: rgba(245, 158, 11, 0.1);">Moderate</td>
+                                <td style="background: rgba(239, 68, 68, 0.1);">High</td>
+                                <td style="background: rgba(239, 68, 68, 0.1);">High (different reasons)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">Decision Matrix: Weighted Scoring</h3>
+                
+                <div class="decision-matrix">
+                    <div class="matrix-item" style="border-color: var(--kft);">
+                        <div class="matrix-label">KFT Capital</div>
+                        <div class="matrix-score" style="color: var(--kft);">72/100</div>
+                        <div class="matrix-label">Moderate Risk, Proven Track Record</div>
+                    </div>
+                    <div class="matrix-item" style="border-color: var(--kefton);">
+                        <div class="matrix-label">Kefton Capital</div>
+                        <div class="matrix-score" style="color: var(--danger);">45/100</div>
+                        <div class="matrix-label">High Risk, Aggressive Terms</div>
+                    </div>
+                    <div class="matrix-item" style="border-color: var(--zkl);">
+                        <div class="matrix-label">ZKL Ventures</div>
+                        <div class="matrix-score" style="color: var(--warning);">58/100</div>
+                        <div class="matrix-label">Best Terms, Highest Execution Risk</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4 style="margin-bottom: 1rem;">Scoring Methodology</h4>
+                    <p style="color: var(--text-muted); margin-bottom: 0.5rem;">Weighted based on critical success factors:</p>
+                    <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                        <li><strong>Timing certainty</strong> (25%) - Will cash arrive in time?</li>
+                        <li><strong>Reputation/trust</strong> (20%) - Can we trust this partner?</li>
+                        <li><strong>Milestone achievability</strong> (20%) - Can we hit targets?</li>
+                        <li><strong>Equity preservation</strong> (15%) - How much ownership retained?</li>
+                        <li><strong>Total capital</strong> (10%) - Sufficient buffer?</li>
+                        <li><strong>Control/governance</strong> (10%) - Board seat concerns?</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Question 1 Section -->
+            <section class="content-section" id="q1">
+                <div class="page-header">
+                    <h1 class="page-title">Question 1: Self-Financing Challenges</h1>
+                    <p class="page-description">What are the challenges of bootstrapping a startup?</p>
+                </div>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">1</div>
+                            Limited Capital & Runway
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;">
+                                <strong>The Problem:</strong> Personal savings have a hard ceiling. Once depleted, the company dies.
+                            </p>
+                            <div class="danger-box">
+                                <strong>EnviroPump Example:</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    Lutz had $200,000 in savings. She estimated this would last 12+ months and get her to market. Instead, she burned through $180,000 in ~10 months and wasn't close to ready. With only $20,000 left, she had 2-3 weeks before insolvency.
+                                </p>
+                            </div>
+                            <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                <li>No access to additional rounds of funding</li>
+                                <li>Can't recover from cost overruns or delays</li>
+                                <li>Forces desperate decisions under time pressure</li>
+                                <li>Creates existential risk from any setback</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">2</div>
+                            Underestimating Costs & Timeline
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;">
+                                <strong>The Problem:</strong> First-time entrepreneurs consistently underestimate how much things cost and how long they take.
+                            </p>
+                            <div class="comparison-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Lutz's Expectation</th>
+                                            <th>Reality</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Cash burned by month 8</td>
+                                            <td>$100,000</td>
+                                            <td style="color: var(--danger);"><strong>$160,000</strong> (60% over)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time to finalize prototype</td>
+                                            <td>6-8 months</td>
+                                            <td style="color: var(--danger);"><strong>12+ months</strong> (still not done)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Time to market</td>
+                                            <td>15 months</td>
+                                            <td style="color: var(--danger);"><strong>Unknown</strong> (not close)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                <li>Development takes longer than expected (prototype iterations)</li>
+                                <li>Legal costs exceed estimates (patent filing)</li>
+                                <li>Salaries drain cash faster than projected</li>
+                                <li>Unexpected expenses arise (testing, compliance, etc.)</li>
+                                <li>No buffer means any miscalculation is fatal</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">3</div>
+                            Resource Constraints
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;">
+                                <strong>The Problem:</strong> Limited capital forces you to operate understaffed and under-resourced.
+                            </p>
+                            <div class="warning-box">
+                                <strong>EnviroPump Impact:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Lutz wanted to hire multiple engineers and an operations manager</li>
+                                    <li>Could only afford ONE engineer (Sam Kelton)</li>
+                                    <li>Being shorthanded slowed development significantly</li>
+                                    <li>Couldn't work on distribution while focused on prototype</li>
+                                    <li>Forced to do everything herself, spreading too thin</li>
+                                </ul>
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--text-muted);">
+                                Bootstrapped companies often can't hire the talent they need, can't afford proper equipment or software, can't outsource specialized work, and can't invest in marketing or market research.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">4</div>
+                            Lack of External Expertise
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;">
+                                <strong>The Problem:</strong> VC-backed companies get "smart money"—strategic advice, network access, and mentorship. Bootstrapped founders are on their own.
+                            </p>
+                            <div class="info-box">
+                                <strong>What Lutz Missed:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>No strategic guidance</strong> - Made first-time mistakes alone</li>
+                                    <li><strong>No network access</strong> - Couldn't leverage VC connections for partnerships</li>
+                                    <li><strong>No reality checks</strong> - Unrealistic timelines went unchallenged</li>
+                                    <li><strong>No industry expertise</strong> - Had to learn distribution/manufacturing from scratch</li>
+                                    <li><strong>No board oversight</strong> - No one to spot problems early</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">5</div>
+                            Slower Growth & Market Entry
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;">
+                                <strong>The Problem:</strong> With limited capital, you can't move fast. Competitors with funding can outpace you.
+                            </p>
+                            <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                                <li>Can't invest in rapid prototyping</li>
+                                <li>Can't hire enough people to work in parallel</li>
+                                <li>Can't afford to make and learn from expensive mistakes</li>
+                                <li>Can't scale production or distribution quickly</li>
+                                <li>Gives competitors time to catch up or overtake</li>
+                            </ul>
+                            <div class="warning-box" style="margin-top: 1rem;">
+                                <strong>First-Mover Disadvantage:</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    EnviroPump had a unique product with no direct competitors at that price point. But if development dragged on, a well-funded competitor could enter the market, force Lutz to lower prices, and eliminate her advantage.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">6</div>
+                            Personal Financial Risk
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;">
+                                <strong>The Problem:</strong> Bootstrapping means risking your life savings with no safety net.
+                            </p>
+                            <div class="danger-box">
+                                <strong>Lutz's Risk Profile:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Invested ALL $200,000 of personal savings</li>
+                                    <li>Quit stable engineering job (lost income)</li>
+                                    <li>Had to cover personal living expenses from same pool</li>
+                                    <li>If company fails, she's broke AND unemployed</li>
+                                    <li>No investor to share downside risk</li>
+                                </ul>
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--text-muted);">
+                                VC-backed founders lose time and reputation if they fail, but not their life savings. Bootstrapped founders can be financially devastated, making it harder to try again.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">7</div>
+                            Negotiating from Weakness
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;">
+                                <strong>The Problem:</strong> When you run out of money, you lose all negotiating leverage.
+                            </p>
+                            <div class="danger-box">
+                                <strong>Lutz's Desperate Position:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Has only 2-3 weeks of cash left</li>
+                                    <li>Must accept ONE of three imperfect offers</li>
+                                    <li>Can't negotiate better terms—take it or die</li>
+                                    <li>VCs know her situation and can exploit it</li>
+                                    <li>Forced to give up more equity than she would have earlier</li>
+                                </ul>
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--text-muted);">
+                                If Lutz had raised capital earlier (before desperation), she could have: negotiated better terms, had time to find more investors, walked away from bad offers, and maintained leverage throughout discussions.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box" style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">Summary: Self-Financing Challenges</h3>
+                    <ol style="margin-left: 1.5rem; color: var(--text-muted);">
+                        <li><strong>Limited runway</strong> - Fixed capital pool with no second chances</li>
+                        <li><strong>Cost/timeline miscalculation</strong> - Always takes more money and time than expected</li>
+                        <li><strong>Resource constraints</strong> - Understaffed and under-equipped</li>
+                        <li><strong>No expert guidance</strong> - Missing "smart money" benefits</li>
+                        <li><strong>Slower growth</strong> - Can't move as fast as funded competitors</li>
+                        <li><strong>Personal financial ruin</strong> - Life savings at risk</li>
+                        <li><strong>Desperate negotiating position</strong> - Must take bad deals when cash runs out</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Question 2 Section -->
+            <section class="content-section" id="q2">
+                <div class="page-header">
+                    <h1 class="page-title">Question 2: Evaluate the Bootstrap Decision</h1>
+                    <p class="page-description">Was Lutz's initial decision to self-finance wise?</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3 style="margin-bottom: 0.5rem;">The Verdict: Understandable, but COSTLY Mistake</h3>
+                    <p style="color: var(--text-muted);">
+                        Lutz's decision to bootstrap was driven by reasonable motivations (control, avoiding debt), but reflected <strong>overconfidence</strong> and <strong>lack of startup experience</strong>. This decision cost her dearly in both money and negotiating position.
+                    </p>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">Why She Made This Decision</h3>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">✓</div>
+                            Her Reasoning (What Made Sense)
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <ol style="margin-left: 1.5rem; color: var(--text-muted);">
+                                <li style="margin-bottom: 1rem;">
+                                    <strong>Desire for Control</strong><br>
+                                    Lutz wanted to maintain complete decision-making authority. She rejected friends who wanted to partner because they'd want input. This is a common founder trait—but taken to an extreme.
+                                </li>
+                                <li style="margin-bottom: 1rem;">
+                                    <strong>Aversion to Debt</strong><br>
+                                    She was "deeply uncomfortable with taking on debt and the risks that came with it." This is financially prudent in general—personal debt for a startup CAN be catastrophic if it fails.
+                                </li>
+                                <li style="margin-bottom: 1rem;">
+                                    <strong>Confidence in Timeline</strong><br>
+                                    Lutz believed she could get to market and generate revenue within 12-15 months. If true, $200K would be sufficient.
+                                </li>
+                                <li style="margin-bottom: 1rem;">
+                                    <strong>Product Validation</strong><br>
+                                    She had a working prototype and enthusiastic feedback from pool stores. The product seemed viable, reducing perceived risk.
+                                </li>
+                                <li style="margin-bottom: 1rem;">
+                                    <strong>Avoiding Fundraising Time</strong><br>
+                                    Raising capital from angels or VCs takes time and effort. She saw it as a distraction from product development.
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">Why This Was a Mistake</h3>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">✗</div>
+                            Fatal Flaws in Her Reasoning
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="danger-box">
+                                <h4>1. Catastrophic Underestimation of Costs</h4>
+                                <div class="comparison-table" style="margin-top: 1rem;">
+                                    <table>
+                                        <tr>
+                                            <td><strong>Expected burn by month 8:</strong></td>
+                                            <td>$100,000</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Actual burn by month 8:</strong></td>
+                                            <td style="color: var(--danger);"><strong>$160,000</strong> (60% over)</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <p style="margin-top: 1rem; color: var(--text-muted);">
+                                    She had NO buffer built in. First-time entrepreneurs almost always underestimate costs by 50-100%. An experienced founder or advisor would have flagged this.
+                                </p>
+                            </div>
+
+                            <div class="danger-box" style="margin-top: 1rem;">
+                                <h4>2. Unrealistic Timeline Expectations</h4>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Expected to finalize prototype in ~6 months → took 12+ months and STILL not done</li>
+                                    <li>Expected to be market-ready in 15 months → nowhere close</li>
+                                    <li>Didn't account for: patent delays, manufacturing setup time, distribution negotiations, regulatory hurdles</li>
+                                </ul>
+                            </div>
+
+                            <div class="danger-box" style="margin-top: 1rem;">
+                                <h4>3. Overconfidence Without Startup Experience</h4>
+                                <p style="color: var(--text-muted); margin-bottom: 0.5rem;">
+                                    Lutz was a <em>product engineer</em>, not a business operator. She had never:
+                                </p>
+                                <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Started a company before</li>
+                                    <li>Raised capital</li>
+                                    <li>Managed cash flow for a startup</li>
+                                    <li>Set up manufacturing or distribution</li>
+                                    <li>Filed patents or managed legal processes</li>
+                                </ul>
+                                <p style="margin-top: 1rem; color: var(--text-muted);">
+                                    Yet she was confident she could do ALL of this with limited resources and no outside help. This is classic <strong>Dunning-Kruger effect</strong>—not knowing what you don't know.
+                                </p>
+                            </div>
+
+                            <div class="danger-box" style="margin-top: 1rem;">
+                                <h4>4. Control at ANY Cost is Short-Sighted</h4>
+                                <p style="color: var(--text-muted);">
+                                    Lutz valued control so highly that she rejected ALL partnership options. But consider:
+                                </p>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>100% of $0 = $0</strong> → If company fails, total control means nothing</li>
+                                    <li><strong>75% of $260M > 100% of $0</strong> → Better to own less of something valuable</li>
+                                    <li>VCs bring expertise that increases success probability</li>
+                                </ul>
+                                <div class="visual-calc" style="margin-top: 1rem;">
+                                    <div class="visual-box">75% ownership</div>
+                                    <div class="visual-operator">×</div>
+                                    <div class="visual-box">$260M company</div>
+                                    <div class="visual-operator">=</div>
+                                    <div class="visual-result">$195M</div>
+                                </div>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                                    vs. 100% ownership of a dead company = $0
+                                </p>
+                            </div>
+
+                            <div class="danger-box" style="margin-top: 1rem;">
+                                <h4>5. Gave Up Negotiating Leverage</h4>
+                                <p style="color: var(--text-muted);">
+                                    By waiting until she was desperate (2-3 weeks of cash), Lutz destroyed her negotiating position:
+                                </p>
+                                <div class="comparison-table" style="margin-top: 1rem;">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>If She'd Raised Early</th>
+                                                <th>Raising While Desperate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="color: var(--success);">Time to find best investors</td>
+                                                <td style="color: var(--danger);">Must take first available offer</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: var(--success);">Can negotiate better terms</td>
+                                                <td style="color: var(--danger);">Take it or die—no leverage</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: var(--success);">Can walk away from bad deals</td>
+                                                <td style="color: var(--danger);">Must accept imperfect offer</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: var(--success);">Higher company valuation</td>
+                                                <td style="color: var(--danger);">Lower valuation = more equity given</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="danger-box" style="margin-top: 1rem;">
+                                <h4>6. Missed "Smart Money" Benefits</h4>
+                                <p style="color: var(--text-muted);">
+                                    By bootstrapping, Lutz missed out on strategic value that VCs provide:
+                                </p>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Industry connections</strong> - Could've accelerated distribution deals</li>
+                                    <li><strong>Operational expertise</strong> - Realistic planning and execution guidance</li>
+                                    <li><strong>Manufacturing contacts</strong> - Faster setup, better terms</li>
+                                    <li><strong>Board oversight</strong> - Would've caught problems at month 4, not month 10</li>
+                                    <li><strong>Future fundraising</strong> - Having tier-1 VCs makes Series A easier</li>
+                                </ul>
+                            </div>
+
+                            <div class="danger-box" style="margin-top: 1rem;">
+                                <h4>7. Wrong Type of Business to Bootstrap</h4>
+                                <p style="color: var(--text-muted);">
+                                    Some businesses are suitable for bootstrapping (service businesses, low-capex software). Hardware/manufacturing startups are NOT:
+                                </p>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>High upfront costs (patents, manufacturing, inventory)</li>
+                                    <li>Long time to revenue (12-24 months minimum)</li>
+                                    <li>Capital-intensive scaling</li>
+                                    <li>Requires specialized expertise (supply chain, distribution)</li>
+                                </ul>
+                                <p style="margin-top: 1rem; color: var(--text-muted);">
+                                    EnviroPump needed $1M+ from day one. Trying to do it with $200K was setting up for failure.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">What She SHOULD Have Done</h3>
+
+                <div class="success-box">
+                    <h4 style="margin-bottom: 1rem;">Better Alternative Strategy</h4>
+                    <ol style="margin-left: 1.5rem; color: var(--text-muted);">
+                        <li style="margin-bottom: 1rem;">
+                            <strong>Raise Angel/VC Capital BEFORE Quitting Job</strong><br>
+                            Use prototype to attract seed funding while still employed. Negotiate from position of strength.
+                        </li>
+                        <li style="margin-bottom: 1rem;">
+                            <strong>Ask for Realistic Amount ($1.5-2M)</strong><br>
+                            Based on actual needs with 50-100% buffer for unknowns.
+                        </li>
+                        <li style="margin-bottom: 1rem;">
+                            <strong>Accept Strategic Investors</strong><br>
+                            Partner with VCs who have manufacturing/distribution expertise. Get "smart money."
+                        </li>
+                        <li style="margin-bottom: 1rem;">
+                            <strong>Build Advisory Board Early</strong><br>
+                            Get experienced startup operators to reality-check plans and timelines.
+                        </li>
+                        <li style="margin-bottom: 1rem;">
+                            <strong>Keep Some Personal Capital in Reserve</strong><br>
+                            Don't invest ALL savings. Have 6-12 months personal runway separate from business.
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="recommendation-card" style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">💡 Final Assessment</h3>
+                    <p style="opacity: 0.9; margin-bottom: 1rem;">
+                        Lutz's bootstrap decision was a <strong>critical error</strong> that nearly killed the company. While her motivations (control, avoiding debt) were understandable, they reflected:
+                    </p>
+                    <ul style="margin-left: 1.5rem; opacity: 0.9;">
+                        <li>Overconfidence without experience</li>
+                        <li>Catastrophic underestimation of costs and timeline</li>
+                        <li>Misunderstanding of what type of business can be bootstrapped</li>
+                        <li>Prioritizing control over success probability</li>
+                    </ul>
+                    <p style="opacity: 0.9; margin-top: 1rem;">
+                        The decision cost her: <strong>$180,000 in burned capital, 10 months of time, all negotiating leverage, and forced her into a desperate position where she must accept an imperfect deal.</strong>
+                    </p>
+                </div>
+            </section>
+
+            <!-- Question 3 Section -->
+            <section class="content-section" id="q3">
+                <div class="page-header">
+                    <h1 class="page-title">Question 3: Units Required for Each Offer</h1>
+                    <p class="page-description">How many pumps must be sold to meet each VC's milestones?</p>
+                </div>
+
+                <div class="info-box">
+                    <h4 style="margin-bottom: 0.5rem;">Given Information</h4>
+                    <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                        <li><strong>Retail Price to Distributors:</strong> $800 per unit</li>
+                        <li><strong>Manufacturing Cost:</strong> $350 per unit</li>
+                        <li><strong>Contribution Margin:</strong> $800 - $350 = $450 per unit</li>
+                    </ul>
+                </div>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon" style="background: var(--kft);">1</div>
+                            KFT Capital: $1M Sales Target
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Units Required = Sales Target ÷ Price per Unit
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">$1,000,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">$800 per unit</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">1,250 units</div>
+                            </div>
+
+                            <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; border-left: 3px solid var(--kft);">
+                                <h4 style="margin-bottom: 1rem;">Analysis</h4>
+                                <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                                    To achieve $1M in sales within <strong>12 months</strong>, EnviroPump needs to sell <strong>1,250 units</strong>.
+                                </p>
+                                <div style="margin-top: 1rem;">
+                                    <strong>Monthly Average Required:</strong>
+                                    <div class="visual-calc" style="margin-top: 0.5rem;">
+                                        <div class="visual-box">1,250 units</div>
+                                        <div class="visual-operator">÷</div>
+                                        <div class="visual-box">12 months</div>
+                                        <div class="visual-operator">=</div>
+                                        <div class="visual-result">~104 units/month</div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <strong>Distribution Strategy Example:</strong>
+                                    <div class="visual-calc" style="margin-top: 0.5rem;">
+                                        <div class="visual-box">125 stores</div>
+                                        <div class="visual-operator">×</div>
+                                        <div class="visual-box">10 units/year</div>
+                                        <div class="visual-operator">=</div>
+                                        <div class="visual-result">1,250 units</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="warning-box" style="margin-top: 1rem;">
+                                <strong>⚠️ Feasibility Assessment: CHALLENGING</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    Remember, Lutz hasn't even finalized the prototype yet and has ZERO distribution established. To hit this target she needs to:
+                                </p>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Finalize prototype within 6 months</li>
+                                    <li>Get into production within 6 months</li>
+                                    <li>Establish distribution to 100-150 stores</li>
+                                    <li>Start selling immediately upon production</li>
+                                    <li>Maintain consistent monthly sales</li>
+                                </ul>
+                                <p style="margin-top: 1rem; color: var(--text-muted);">
+                                    This is aggressive but potentially achievable if everything goes perfectly.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon" style="background: var(--kefton);">2</div>
+                            Kefton Capital: $2M Sales Target
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Units Required = Sales Target ÷ Price per Unit
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">$2,000,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">$800 per unit</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">2,500 units</div>
+                            </div>
+
+                            <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; border-left: 3px solid var(--kefton);">
+                                <h4 style="margin-bottom: 1rem;">Analysis</h4>
+                                <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                                    To achieve $2M in sales within <strong>12 months</strong>, EnviroPump needs to sell <strong>2,500 units</strong>.
+                                </p>
+                                <div style="margin-top: 1rem;">
+                                    <strong>Monthly Average Required:</strong>
+                                    <div class="visual-calc" style="margin-top: 0.5rem;">
+                                        <div class="visual-box">2,500 units</div>
+                                        <div class="visual-operator">÷</div>
+                                        <div class="visual-box">12 months</div>
+                                        <div class="visual-operator">=</div>
+                                        <div class="visual-result">~208 units/month</div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <strong>Distribution Strategy Example:</strong>
+                                    <div class="visual-calc" style="margin-top: 0.5rem;">
+                                        <div class="visual-box">250 stores</div>
+                                        <div class="visual-operator">×</div>
+                                        <div class="visual-box">10 units/year</div>
+                                        <div class="visual-operator">=</div>
+                                        <div class="visual-result">2,500 units</div>
+                                    </div>
+                                    <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                                        OR need to reach 500 stores selling 5 units each
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="danger-box" style="margin-top: 1rem;">
+                                <strong>🚨 Feasibility Assessment: VERY DIFFICULT</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    This is <strong>DOUBLE</strong> what KFT requires. Remember Kefton's OTHER milestones:
+                                </p>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>Production commences within 6 months</li>
+                                    <li><strong>Distribution to 500 stores within 6 months</strong></li>
+                                    <li>$2M sales within 12 months</li>
+                                </ul>
+                                <p style="margin-top: 1rem; font-weight: 700;">
+                                    Lutz explicitly stated she is NOT confident she can achieve these milestones.
+                                </p>
+                                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0.5rem;">
+                                    <strong>The Risk:</strong> If she can't hit 500 stores or $2M sales, Kefton could withhold funding and potentially take control of the company through aggressive renegotiation.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon" style="background: var(--zkl);">3</div>
+                            ZKL Ventures: $500K Sales Target
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Units Required = Sales Target ÷ Price per Unit
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">$500,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">$800 per unit</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">625 units</div>
+                            </div>
+
+                            <div style="margin-top: 1.5rem; padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; border-left: 3px solid var(--zkl);">
+                                <h4 style="margin-bottom: 1rem;">Analysis</h4>
+                                <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                                    To achieve $500K in sales within <strong>12 months</strong>, EnviroPump needs to sell <strong>625 units</strong>.
+                                </p>
+                                <div style="margin-top: 1rem;">
+                                    <strong>Monthly Average Required:</strong>
+                                    <div class="visual-calc" style="margin-top: 0.5rem;">
+                                        <div class="visual-box">625 units</div>
+                                        <div class="visual-operator">÷</div>
+                                        <div class="visual-box">12 months</div>
+                                        <div class="visual-operator">=</div>
+                                        <div class="visual-result">~52 units/month</div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1rem;">
+                                    <strong>Distribution Strategy Example:</strong>
+                                    <div class="visual-calc" style="margin-top: 0.5rem;">
+                                        <div class="visual-box">62-63 stores</div>
+                                        <div class="visual-operator">×</div>
+                                        <div class="visual-box">10 units/year</div>
+                                        <div class="visual-operator">=</div>
+                                        <div class="visual-result">625 units</div>
+                                    </div>
+                                    <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                                        OR 125 stores selling 5 units each
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1rem;">
+                                <strong>✅ Feasibility Assessment: MOST ACHIEVABLE</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    This is the EASIEST target:
+                                </p>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>50% of KFT's target</strong> (625 vs 1,250 units)</li>
+                                    <li><strong>25% of Kefton's target</strong> (625 vs 2,500 units)</li>
+                                    <li>Only requires ~50-60 stores</li>
+                                    <li>Only ONE milestone to worry about</li>
+                                    <li>Much more realistic for a product launch</li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem;">
+                                    <strong>The Trade-off:</strong> While this is the easiest milestone, it comes with the risk that ZKL may not deliver funding on time due to their communication issues.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">Comparative Summary</h3>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>VC Firm</th>
+                                <th>Sales Target</th>
+                                <th>Units Required</th>
+                                <th>Units/Month</th>
+                                <th>Stores Needed (10 units/yr each)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-left: 3px solid var(--zkl);">
+                                <td><strong style="color: var(--zkl);">ZKL Ventures</strong></td>
+                                <td>$500,000</td>
+                                <td style="background: rgba(16, 185, 129, 0.1);"><strong>625 units</strong></td>
+                                <td>52/month</td>
+                                <td>~63 stores</td>
+                            </tr>
+                            <tr style="border-left: 3px solid var(--kft);">
+                                <td><strong style="color: var(--kft);">KFT Capital</strong></td>
+                                <td>$1,000,000</td>
+                                <td style="background: rgba(245, 158, 11, 0.1);"><strong>1,250 units</strong></td>
+                                <td>104/month</td>
+                                <td>~125 stores</td>
+                            </tr>
+                            <tr style="border-left: 3px solid var(--kefton);">
+                                <td><strong style="color: var(--kefton);">Kefton Capital</strong></td>
+                                <td>$2,000,000</td>
+                                <td style="background: rgba(239, 68, 68, 0.1);"><strong>2,500 units</strong></td>
+                                <td>208/month</td>
+                                <td>~250 stores</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-box">
+                    <h4 style="margin-bottom: 0.5rem;">📊 Context: Year 5 Target</h4>
+                    <p style="color: var(--text-muted);">
+                        Lutz's 5-year projection was to sell <strong>75,000 units/year</strong> through 1,500 stores. So year one targets represent:
+                    </p>
+                    <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                        <li>ZKL: 625 units = <strong>0.8% of year 5 target</strong></li>
+                        <li>KFT: 1,250 units = <strong>1.7% of year 5 target</strong></li>
+                        <li>Kefton: 2,500 units = <strong>3.3% of year 5 target</strong></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Question 4 Section -->
+            <section class="content-section" id="q4">
+                <div class="page-header">
+                    <h1 class="page-title">Question 4: Which VC Should Lutz Choose?</h1>
+                    <p class="page-description">Final recommendation with full justification</p>
+                </div>
+
+                <div class="hero-card" style="background: linear-gradient(135deg, var(--danger), #dc2626);">
+                    <h2 style="margin-bottom: 1rem;">⏰ The Reality: No Perfect Option</h2>
+                    <p style="opacity: 0.9;">
+                        All three offers have significant flaws. Lutz is in a <strong>desperate negotiating position</strong> with only 2-3 weeks of cash left. She must choose the "least bad" option, not the "best" option.
+                    </p>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">Detailed Analysis of Each Option</h3>
+
+                <div class="vc-comparison">
+                    <div class="vc-card kft">
+                        <div class="vc-header">
+                            <div class="vc-name" style="color: var(--kft);">KFT Capital</div>
+                            <div class="vc-badge badge-moderate">RECOMMENDED</div>
+                        </div>
+                        
+                        <h4 style="margin: 1rem 0;">Overall Assessment: Best Risk/Reward Balance</h4>
+                        
+                        <div class="pros-cons">
+                            <div class="pro-list">
+                                <div class="list-title">
+                                    <span style="color: var(--success);">✓</span> Strengths
+                                </div>
+                                <ul>
+                                    <li>Proven track record</li>
+                                    <li>Smart money with network</li>
+                                    <li>$50K bridge loan ASAP</li>
+                                    <li>Achievable milestones</li>
+                                    <li>Only 1 board seat</li>
+                                    <li>Most trustworthy partner</li>
+                                </ul>
+                            </div>
+                            <div class="con-list">
+                                <div class="list-title">
+                                    <span style="color: var(--danger);">✗</span> Weaknesses
+                                </div>
+                                <ul>
+                                    <li>Only $1M (no buffer)</li>
+                                    <li>25% equity (highest)</li>
+                                    <li>Staged with covenants</li>
+                                    <li>Must sell 1,250 units</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1rem; padding: 1rem; background: rgba(59, 130, 246, 0.1); border-radius: 0.5rem;">
+                            <strong>Risk Rating: MODERATE</strong>
+                            <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                                Highest probability of success despite giving up most equity.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="vc-card kefton">
+                        <div class="vc-header">
+                            <div class="vc-name" style="color: var(--kefton);">Kefton Capital</div>
+                            <div class="vc-badge badge-risky">NOT RECOMMENDED</div>
+                        </div>
+                        
+                        <h4 style="margin: 1rem 0;">Overall Assessment: Dangerous Partner</h4>
+                        
+                        <div class="pros-cons">
+                            <div class="pro-list">
+                                <div class="list-title">
+                                    <span style="color: var(--success);">✓</span> Strengths
+                                </div>
+                                <ul>
+                                    <li>Full $1.5M requested</li>
+                                    <li>Only 15% equity</li>
+                                    <li>Deep pockets</li>
+                                    <li>3-week funding</li>
+                                </ul>
+                            </div>
+                            <div class="con-list">
+                                <div class="list-title">
+                                    <span style="color: var(--danger);">✗</span> Weaknesses
+                                </div>
+                                <ul>
+                                    <li>Predatory reputation</li>
+                                    <li>2 board seats (control risk)</li>
+                                    <li>Impossible milestones</li>
+                                    <li>2,500 units required</li>
+                                    <li>500 stores in 6 months</li>
+                                    <li>Cash starvation tactics</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem;">
+                            <strong>Risk Rating: VERY HIGH</strong>
+                            <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                                High probability of hostile takeover when milestones aren't met.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="vc-card zkl">
+                        <div class="vc-header">
+                            <div class="vc-name" style="color: var(--zkl);">ZKL Ventures</div>
+                            <div class="vc-badge badge-moderate">RISKY GAMBLE</div>
+                        </div>
+                        
+                        <h4 style="margin: 1rem 0;">Overall Assessment: Best Terms, Worst Execution Risk</h4>
+                        
+                        <div class="pros-cons">
+                            <div class="pro-list">
+                                <div class="list-title">
+                                    <span style="color: var(--success);">✓</span> Strengths
+                                </div>
+                                <ul>
+                                    <li>Highest funding ($2M)</li>
+                                    <li>Only 15% equity</li>
+                                    <li>Easiest milestone (625 units)</li>
+                                    <li>Only 1 milestone</li>
+                                    <li>Best value per equity point</li>
+                                </ul>
+                            </div>
+                            <div class="con-list">
+                                <div class="list-title">
+                                    <span style="color: var(--danger);">✗</span> Weaknesses
+                                </div>
+                                <ul>
+                                    <li>Silent for 1 month</li>
+                                    <li>Timing undefined</li>
+                                    <li>Could go under waiting</li>
+                                    <li>Can't verify reputation</li>
+                                    <li>Overseas complications</li>
+                                    <li>Now or never ultimatum</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1rem; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 0.5rem;">
+                            <strong>Risk Rating: HIGH</strong>
+                            <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.875rem;">
+                                Excellent terms mean nothing if funding doesn't arrive in time.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">Decision Framework Analysis</h3>
+
+                <div class="accordion-item active">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">⚠️</div>
+                            Critical Factor #1: Timing (Survival)
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;"><strong>Question: Will cash arrive before EnviroPump runs out of money?</strong></p>
+                            
+                            <div class="comparison-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>VC Firm</th>
+                                            <th>Timeline</th>
+                                            <th>Survival Risk</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="background: rgba(16, 185, 129, 0.1);">
+                                            <td><strong style="color: var(--kft);">KFT</strong></td>
+                                            <td>$50K bridge in <strong>1 week</strong>, $250K in 1 month</td>
+                                            <td style="color: var(--success);"><strong>✓ SAFE</strong></td>
+                                        </tr>
+                                        <tr style="background: rgba(16, 185, 129, 0.1);">
+                                            <td><strong style="color: var(--kefton);">Kefton</strong></td>
+                                            <td>$500K in <strong>3 weeks</strong></td>
+                                            <td style="color: var(--success);"><strong>✓ LIKELY SAFE</strong></td>
+                                        </tr>
+                                        <tr style="background: rgba(239, 68, 68, 0.1);">
+                                            <td><strong style="color: var(--zkl);">ZKL</strong></td>
+                                            <td>"Very quickly" - <strong>undefined</strong></td>
+                                            <td style="color: var(--danger);"><strong>✗ DEATH RISK</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="danger-box" style="margin-top: 1rem;">
+                                <strong>The ZKL Risk:</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    Lutz has 2-3 weeks before insolvency. ZKL went silent for a MONTH after initial contact. If they take 4+ weeks to deliver funds, EnviroPump is dead regardless of how good the terms are.
+                                </p>
+                                <p style="margin-top: 0.5rem; font-weight: 700;">
+                                    You can't spend $2M if you're bankrupt before it arrives.
+                                </p>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1rem;">
+                                <strong>Winner: KFT</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    The $50K bridge loan within 1 week is CRITICAL. This buys time for the main funding to close. No other offer has this.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">🎯</div>
+                            Critical Factor #2: Milestone Achievability
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;"><strong>Question: Can Lutz realistically hit these targets?</strong></p>
+                            
+                            <div style="display: grid; gap: 1rem;">
+                                <div style="padding: 1rem; background: rgba(16, 185, 129, 0.1); border-left: 3px solid var(--zkl); border-radius: 0.5rem;">
+                                    <strong style="color: var(--zkl);">ZKL: 625 units ($500K)</strong>
+                                    <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                        ✓ Most achievable - only requires ~63 stores, 52 units/month. This is a reasonable first-year target for a product launch.
+                                    </p>
+                                </div>
+
+                                <div style="padding: 1rem; background: rgba(245, 158, 11, 0.1); border-left: 3px solid var(--kft); border-radius: 0.5rem;">
+                                    <strong style="color: var(--kft);">KFT: 1,250 units ($1M)</strong>
+                                    <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                        ⚠ Challenging but possible - requires ~125 stores, 104 units/month. Aggressive but achievable if prototype finalizes on time and distribution executes well.
+                                    </p>
+                                </div>
+
+                                <div style="padding: 1rem; background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--kefton); border-radius: 0.5rem;">
+                                    <strong style="color: var(--kefton);">Kefton: 2,500 units ($2M) + 500 stores</strong>
+                                    <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                        ✗ Very difficult - Lutz explicitly said she's NOT confident. Requires 500 stores in 6 months + 208 units/month. High failure risk.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="warning-box" style="margin-top: 1rem;">
+                                <strong>Why Milestone Failure is Catastrophic:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Staged funding withheld</strong> - Back to cash crisis</li>
+                                    <li><strong>Renegotiation from weakness</strong> - VCs demand more equity</li>
+                                    <li><strong>Potential takeover</strong> - Especially with Kefton's 2 board seats</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">🤝</div>
+                            Critical Factor #3: Partner Trust & Reputation
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <p style="margin-bottom: 1rem;"><strong>Question: Can Lutz trust this partner for a multi-year relationship?</strong></p>
+                            
+                            <div style="display: grid; gap: 1rem;">
+                                <div style="padding: 1.5rem; background: var(--surface-light); border: 2px solid var(--kft); border-radius: 0.75rem;">
+                                    <h4 style="color: var(--kft); margin-bottom: 0.5rem;">KFT Capital</h4>
+                                    <div style="color: var(--success); font-weight: 700; margin-bottom: 0.5rem;">✓✓✓ EXCELLENT REPUTATION</div>
+                                    <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                                        <li>All 9 portfolio firms gave glowing reviews</li>
+                                        <li>"Smart money" - strategic advice + network</li>
+                                        <li>Never let portfolio firms run out of cash</li>
+                                        <li>Well-regarded in VC community</li>
+                                        <li>Responsive communication</li>
+                                    </ul>
+                                    <p style="margin-top: 1rem; color: var(--text-muted);">
+                                        <strong>Trust Level: HIGH</strong> - This is a partner who will help you succeed.
+                                    </p>
+                                </div>
+
+                                <div style="padding: 1.5rem; background: var(--surface-light); border: 2px solid var(--kefton); border-radius: 0.75rem;">
+                                    <h4 style="color: var(--kefton); margin-bottom: 0.5rem;">Kefton Capital</h4>
+                                    <div style="color: var(--danger); font-weight: 700; margin-bottom: 0.5rem;">✗ PREDATORY REPUTATION</div>
+                                    <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                                        <li>Known for "cash starving" portfolio firms</li>
+                                        <li>Withholds funding over technicalities</li>
+                                        <li>Demands 3× original equity in renegotiation</li>
+                                        <li>Takes control and fires management</li>
+                                        <li>2 board seats = control risk</li>
+                                    </ul>
+                                    <p style="margin-top: 1rem; color: var(--text-muted);">
+                                        <strong>Trust Level: VERY LOW</strong> - This is a hostile partner waiting to exploit failure.
+                                    </p>
+                                </div>
+
+                                <div style="padding: 1.5rem; background: var(--surface-light); border: 2px solid var(--zkl); border-radius: 0.75rem;">
+                                    <h4 style="color: var(--zkl); margin-bottom: 0.5rem;">ZKL Ventures</h4>
+                                    <div style="color: var(--warning); font-weight: 700; margin-bottom: 0.5rem;">? UNKNOWN / CONCERNING</div>
+                                    <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                                        <li>Went silent for 1 month (major red flag)</li>
+                                        <li>Can't verify reputation - only reached 1 portfolio firm</li>
+                                        <li>Overseas firm (Dubai) - distance issues</li>
+                                        <li>That firm gave no useful information</li>
+                                        <li>Communication failures will continue</li>
+                                    </ul>
+                                    <p style="margin-top: 1rem; color: var(--text-muted);">
+                                        <strong>Trust Level: UNKNOWN</strong> - Can't rely on a partner you can't reach.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">💰</div>
+                            Critical Factor #4: Economics & Control
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="comparison-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Metric</th>
+                                            <th>KFT</th>
+                                            <th>Kefton</th>
+                                            <th>ZKL</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Total Capital</td>
+                                            <td style="color: var(--danger);">$1M ✗</td>
+                                            <td>$1.5M</td>
+                                            <td style="color: var(--success);">$2M ✓</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Equity Given</td>
+                                            <td style="color: var(--danger);">25% ✗</td>
+                                            <td style="color: var(--success);">15% ✓</td>
+                                            <td style="color: var(--success);">15% ✓</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Value ($/1%)</td>
+                                            <td>$40K per %</td>
+                                            <td>$100K per %</td>
+                                            <td style="color: var(--success);">$133K per % ✓</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Board Control</td>
+                                            <td style="color: var(--success);">1 of 5 ✓</td>
+                                            <td style="color: var(--danger);">2 of 5 ✗</td>
+                                            <td>Unclear</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Lutz's Ownership</td>
+                                            <td style="color: var(--danger);">75%</td>
+                                            <td style="color: var(--success);">85% ✓</td>
+                                            <td style="color: var(--success);">85% ✓</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 1rem;">
+                                <h4 style="margin-bottom: 0.5rem;">Economic Reality Check</h4>
+                                <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                                    While KFT takes the most equity (25%), let's calculate what Lutz's stake is worth if the company succeeds:
+                                </p>
+                                <div class="visual-calc">
+                                    <div class="visual-box">Year 5 valuation: $220M</div>
+                                    <div class="visual-operator">×</div>
+                                    <div class="visual-box">75% ownership</div>
+                                    <div class="visual-operator">=</div>
+                                    <div class="visual-result">$165M</div>
+                                </div>
+                                <p style="margin-top: 1rem; color: var(--text-muted);">
+                                    vs. 85% of a failed company = $0
+                                </p>
+                                <p style="margin-top: 0.5rem; font-weight: 700;">
+                                    The key question: Which partner maximizes SUCCESS probability, not ownership percentage?
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 3rem 0 1.5rem;">FINAL RECOMMENDATION</h3>
+
+                <div class="recommendation-card">
+                    <h2 style="margin-bottom: 1.5rem;">🎯 Choose KFT Capital</h2>
+                    
+                    <div style="font-size: 1.125rem; margin-bottom: 2rem;">
+                        Despite giving up the most equity (25%) and receiving the least capital ($1M), <strong>KFT Capital is the clear choice</strong> because it maximizes the probability that EnviroPump will survive and succeed.
+                    </div>
+
+                    <h3 style="margin-bottom: 1rem;">Why KFT Wins:</h3>
+                    <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>1. Timing Certainty (CRITICAL)</strong><br>
+                            <span style="opacity: 0.9;">$50K bridge loan in 1 week ensures survival. No other offer has this safety net.</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>2. Trustworthy Partner</strong><br>
+                            <span style="opacity: 0.9;">Excellent reputation, 9/9 positive portfolio reviews, proven track record of supporting founders.</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>3. Achievable Milestones</strong><br>
+                            <span style="opacity: 0.9;">1,250 units is challenging but realistic. Won't set Lutz up for failure like Kefton.</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>4. "Smart Money" Benefits</strong><br>
+                            <span style="opacity: 0.9;">Strategic advice, network access, and operational guidance increase success probability significantly.</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>5. Minimal Control Risk</strong><br>
+                            <span style="opacity: 0.9;">Only 1 of 5 board seats means Lutz retains control. KFT won't stage a hostile takeover.</span>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 1rem;">Why NOT the Others:</h3>
+                    <div style="display: grid; gap: 1rem;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 0.5rem; border-left: 3px solid var(--kefton);">
+                            <strong style="color: var(--kefton);">Kefton: REJECT</strong><br>
+                            <span style="opacity: 0.9;">Predatory reputation + impossible milestones + 2 board seats = HIGH risk of hostile takeover and loss of company. Not worth the $1.5M.</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 0.5rem; border-left: 3px solid var(--zkl);">
+                            <strong style="color: var(--zkl);">ZKL: TOO RISKY</strong><br>
+                            <span style="opacity: 0.9;">Best terms on paper, but undefined timing + 1-month communication blackout + unverifiable reputation = company could die waiting for funds. Can't gamble survival on "very quickly."</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">💡 The Bigger Lesson</h4>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                        This entire crisis was avoidable. If Lutz had:
+                    </p>
+                    <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                        <li>Raised capital BEFORE bootstrapping</li>
+                        <li>Built in proper cost/timeline buffers</li>
+                        <li>Prioritized success over control</li>
+                    </ul>
+                    <p style="margin-top: 1rem; color: var(--text-muted);">
+                        She would now be negotiating from <strong>strength</strong> instead of <strong>desperation</strong>, could demand better terms, and wouldn't be forced to accept an imperfect offer.
+                    </p>
+                    <p style="margin-top: 1rem; font-weight: 700;">
+                        Startup lesson: The best time to raise money is when you DON'T desperately need it.
+                    </p>
+                </div>
+
+                <div style="margin-top: 3rem; padding: 2rem; background: var(--surface); border: 2px solid var(--primary); border-radius: 1rem; text-align: center;">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary);">Decision Made: Sign KFT's Term Sheet</h3>
+                    <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
+                        75% of a successful $220M company ($165M) is infinitely better than 100% of a bankrupt company ($0). KFT gives Lutz the highest probability of reaching that $220M valuation.
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                this.classList.add('active');
+                
+                const sectionId = this.dataset.section;
+                document.getElementById(sectionId).classList.add('active');
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Accordion Toggle
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const item = this.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+
+        // VC Card hover effects
+        document.querySelectorAll('.vc-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>
