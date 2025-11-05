@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial 5: Working Capital & Efficiency Ratios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --background: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --capital: #8b5cf6;
+            --efficiency: #f59e0b;
+            --working-capital: #10b981;
+            --turnover: #3b82f6;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-item:hover {
+            background: var(--surface-light);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-description {
+            color: var(--text-muted);
+            font-size: 1.125rem;
+        }
+
+        /* Concept Cards */
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .concept-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .concept-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+        }
+
+        .concept-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .concept-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .concept-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .concept-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .concept-formula {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        /* Scenario Box */
+        .scenario-box {
+            background: var(--surface);
+            border: 2px solid var(--primary);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .scenario-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .data-table {
+            width: 100%;
+            background: var(--background);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--surface-light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .data-table td:last-child {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* Accordion */
+        .accordion-item {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-item.active {
+            border-color: var(--primary);
+        }
+
+        .accordion-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .accordion-header:hover {
+            background: var(--surface-light);
+        }
+
+        .accordion-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .accordion-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--primary);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+        }
+
+        .accordion-toggle {
+            font-size: 1.25rem;
+            transition: transform 0.3s;
+        }
+
+        .accordion-item.active .accordion-toggle {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 5000px;
+        }
+
+        .accordion-body {
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Formula Box */
+        .formula-box {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.125rem;
+            font-weight: 600;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        /* Visual Calculation */
+        .visual-calc {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+            justify-content: center;
+        }
+
+        .visual-box {
+            background: var(--surface-light);
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            border: 2px solid var(--border);
+            font-weight: 600;
+        }
+
+        .visual-operator {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .visual-result {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+
+        /* Alert Boxes */
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid var(--success);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            color: var(--success);
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid var(--warning);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            color: var(--warning);
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            color: var(--primary);
+        }
+
+        .danger-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid var(--danger);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            color: var(--danger);
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 2rem;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        /* Multiple Choice */
+        .mc-question {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mc-question-text {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .mc-options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .mc-option {
+            background: var(--surface-light);
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mc-option:hover {
+            border-color: var(--primary);
+            background: var(--background);
+        }
+
+        .mc-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .mc-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .mc-label {
+            width: 2rem;
+            height: 2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .mc-option.correct .mc-label {
+            background: var(--success);
+        }
+
+        .mc-option.incorrect .mc-label {
+            background: var(--danger);
+        }
+
+        .mc-explanation {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--background);
+            border-radius: 0.5rem;
+            display: none;
+        }
+
+        .mc-option.selected .mc-explanation {
+            display: block;
+        }
+
+        /* Comparison Table */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+
+        .comparison-card h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .concept-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .visual-calc {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">Tutorial 5</div>
+                <div class="sidebar-subtitle">Working Capital & Efficiency</div>
+            </div>
+
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-section-title">Overview</div>
+                    <div class="nav-item active" data-section="overview">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Key Concepts
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Scenarios</div>
+                    <div class="nav-item" data-section="scenario1">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Green Cycle E-Bikes
+                    </div>
+                    <div class="nav-item" data-section="scenario2">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        Home Comfort Retailer
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Assessment</div>
+                    <div class="nav-item" data-section="mcq">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Multiple Choice
+                    </div>
+                    <div class="nav-item" data-section="homework">
+                        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                        TechStart Exercise
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active">
+                <div class="page-header">
+                    <h1 class="page-title">Working Capital & Efficiency Analysis</h1>
+                    <p class="page-description">Master the key metrics for managing short-term finances and operational efficiency</p>
+                </div>
+
+                <div class="concept-grid">
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon" style="background: var(--capital); color: white;">💼</div>
+                            <div class="concept-title">Capital Employed</div>
+                        </div>
+                        <div class="concept-description">
+                            The total amount of capital used for operations and generating returns
+                        </div>
+                        <div class="concept-formula">
+                            Capital Employed = <br>Total Assets - Current Liabilities
+                        </div>
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                            Represents long-term capital invested in the business (equity + non-current liabilities)
+                        </div>
+                    </div>
+
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon" style="background: var(--secondary); color: white;">📈</div>
+                            <div class="concept-title">ROCE</div>
+                        </div>
+                        <div class="concept-description">
+                            Return on Capital Employed - measures profitability of long-term investments
+                        </div>
+                        <div class="concept-formula">
+                            ROCE = <br>(EBIT / Capital Employed) × 100
+                        </div>
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                            Shows how efficiently capital is being used to generate operating profits
+                        </div>
+                    </div>
+
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon" style="background: var(--working-capital); color: white;">💚</div>
+                            <div class="concept-title">Working Capital</div>
+                        </div>
+                        <div class="concept-description">
+                            The difference between current assets and current liabilities
+                        </div>
+                        <div class="concept-formula">
+                            Working Capital = <br>Current Assets - Current Liabilities
+                        </div>
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                            Indicates short-term financial health and operational liquidity
+                        </div>
+                    </div>
+
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon" style="background: var(--turnover); color: white;">🔄</div>
+                            <div class="concept-title">AR Turnover</div>
+                        </div>
+                        <div class="concept-description">
+                            Accounts Receivable Turnover - measures how quickly cash is collected
+                        </div>
+                        <div class="concept-formula">
+                            AR Turnover = <br>Sales Revenue / Average AR
+                        </div>
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                            Higher ratios indicate efficient credit management
+                        </div>
+                    </div>
+
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon" style="background: var(--efficiency); color: white;">📦</div>
+                            <div class="concept-title">Inventory Turnover</div>
+                        </div>
+                        <div class="concept-description">
+                            Measures how many times inventory is sold and replaced during a period
+                        </div>
+                        <div class="concept-formula">
+                            Inventory Turnover = <br>COGS / Average Inventory
+                        </div>
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                            Higher ratios suggest efficient inventory management
+                        </div>
+                    </div>
+
+                    <div class="concept-card">
+                        <div class="concept-header">
+                            <div class="concept-icon" style="background: var(--warning); color: white;">📅</div>
+                            <div class="concept-title">Days Ratios</div>
+                        </div>
+                        <div class="concept-description">
+                            Converts turnover ratios into time periods
+                        </div>
+                        <div class="concept-formula">
+                            Days = 365 / Turnover Ratio
+                        </div>
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                            Shows average collection period or inventory holding period
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <strong>💡 Key Insight:</strong> Working capital management is crucial for entrepreneurial success. These ratios help ensure you have enough liquid resources to meet short-term obligations while operating efficiently. Poor working capital management is one of the leading causes of business failure.
+                </div>
+            </section>
+
+            <!-- Scenario 1: Green Cycle E-Bikes -->
+            <section id="scenario1" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">Scenario 1: Green Cycle E-Bikes</h1>
+                    <p class="page-description">Capital Efficiency & Collection Period Analysis</p>
+                </div>
+
+                <div class="scenario-box">
+                    <div class="scenario-title">⚡ Company Overview</div>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        Green Cycle is a new electric bicycle manufacturer. They want to ensure they are using their invested capital efficiently and managing their short-term finances well.
+                    </p>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Financial Item</th>
+                                <th>Amount (£M)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Sales Revenue</td>
+                                <td>£15.0M</td>
+                            </tr>
+                            <tr>
+                                <td>EBIT (Operating Profit)</td>
+                                <td>£2.5M</td>
+                            </tr>
+                            <tr>
+                                <td>Total Assets</td>
+                                <td>£18.0M</td>
+                            </tr>
+                            <tr>
+                                <td>Current Liabilities</td>
+                                <td>£3.0M</td>
+                            </tr>
+                            <tr>
+                                <td>Accounts Receivable (End of Year)</td>
+                                <td>£2.5M</td>
+                            </tr>
+                            <tr>
+                                <td>Accounts Receivable (Start of Year)</td>
+                                <td>£1.5M</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q1</div>
+                            Calculate Capital Employed & ROCE
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h3 style="margin-bottom: 1.5rem; color: var(--capital);">💼 Capital Employed Calculation</h3>
+
+                            <div class="formula-box">
+                                Capital Employed = Total Assets - Current Liabilities
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 1: Identify the Components</h4>
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; margin-bottom: 1.5rem;">
+                                <div style="margin-bottom: 0.5rem;">✓ Total Assets: £18.0M</div>
+                                <div style="margin-bottom: 0.5rem;">✓ Current Liabilities: £3.0M</div>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 2: Calculate Capital Employed</h4>
+                            <div class="visual-calc">
+                                <div class="visual-box">£18.0M</div>
+                                <div class="visual-operator">−</div>
+                                <div class="visual-box">£3.0M</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£15.0M</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Capital Employed = £15.0M</strong>
+                            </div>
+
+                            <div class="info-box" style="margin: 1.5rem 0;">
+                                <strong>What This Means:</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.9;">
+                                    Capital Employed represents the long-term capital invested in the business. By subtracting current liabilities, we focus on the permanent capital (equity + non-current liabilities) that management uses to generate returns.
+                                </p>
+                            </div>
+
+                            <h3 style="margin: 2rem 0 1.5rem; color: var(--secondary);">📈 ROCE Calculation</h3>
+
+                            <div class="formula-box">
+                                ROCE = (EBIT / Capital Employed) × 100
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 3: Calculate ROCE</h4>
+                            <div class="visual-calc">
+                                <div class="visual-box">£2.5M</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£15.0M</div>
+                                <div class="visual-operator">×</div>
+                                <div class="visual-box">100</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">16.67%</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ ROCE = 16.67%</strong>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">ROCE Interpretation</h4>
+                            <div style="padding: 1.5rem; background: var(--surface); border: 2px solid var(--capital); border-radius: 0.75rem;">
+                                <strong style="color: var(--capital);">What 16.67% ROCE Means:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Profitability:</strong> For every £1 of capital employed, the company generates £0.1667 in operating profit</li>
+                                    <li><strong>Efficiency:</strong> This is a strong return, indicating efficient use of long-term capital</li>
+                                    <li><strong>Benchmark:</strong> Generally, 15%+ is considered excellent; Green Cycle exceeds this</li>
+                                    <li><strong>Investment Quality:</strong> Higher than typical cost of capital, creating shareholder value</li>
+                                    <li><strong>Comparison:</strong> Should be compared to industry peers and the company's cost of capital</li>
+                                    <li><strong>Management Performance:</strong> Demonstrates effective deployment of capital resources</li>
+                                </ul>
+                            </div>
+
+                            <div class="warning-box" style="margin-top: 1.5rem;">
+                                <strong>⚠️ Important Note:</strong> ROCE uses EBIT (operating profit) rather than net income because it focuses on returns from operations before considering financing decisions (interest) and taxes. This makes it ideal for comparing operational efficiency across companies.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q2</div>
+                            Calculate Working Capital
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Working Capital = Current Assets - Current Liabilities
+                            </div>
+
+                            <div class="danger-box" style="margin-top: 1.5rem;">
+                                <strong>⚠️ Data Limitation:</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.9;">
+                                    Working Capital cannot be calculated with the given data because <strong>Current Assets</strong> information is not provided. We only have Current Liabilities (£3.0M).
+                                </p>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">What Working Capital Represents</h4>
+                            <div class="info-box">
+                                <strong>Understanding Working Capital:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Definition:</strong> The funds available for day-to-day operations</li>
+                                    <li><strong>Formula:</strong> Current Assets - Current Liabilities</li>
+                                    <li><strong>Positive WC:</strong> More current assets than current liabilities (healthy)</li>
+                                    <li><strong>Negative WC:</strong> More current liabilities than current assets (potential liquidity issues)</li>
+                                    <li><strong>Importance:</strong> Ensures the company can meet short-term obligations and operate smoothly</li>
+                                    <li><strong>Management:</strong> Balance between having enough liquidity and not tying up too much capital</li>
+                                </ul>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Components of Working Capital</h4>
+                            <div class="comparison-grid">
+                                <div class="comparison-card">
+                                    <h4 style="color: var(--success);">Current Assets (+)</h4>
+                                    <ul style="color: var(--text-muted); margin-left: 1.5rem;">
+                                        <li>Cash</li>
+                                        <li>Accounts Receivable</li>
+                                        <li>Inventory</li>
+                                        <li>Short-term investments</li>
+                                        <li>Prepaid expenses</li>
+                                    </ul>
+                                </div>
+                                <div class="comparison-card">
+                                    <h4 style="color: var(--danger);">Current Liabilities (−)</h4>
+                                    <ul style="color: var(--text-muted); margin-left: 1.5rem;">
+                                        <li>Accounts Payable</li>
+                                        <li>Short-term debt</li>
+                                        <li>Accrued expenses</li>
+                                        <li>Unearned revenue</li>
+                                        <li>Current portion of long-term debt</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="warning-box" style="margin-top: 1.5rem;">
+                                <strong>💡 Entrepreneurial Insight:</strong> Effective working capital management is critical for business survival. Many profitable companies fail due to poor working capital management - they can't meet short-term obligations even though they're profitable on paper. This is often called "insolvency while profitable."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q3</div>
+                            Calculate AR Turnover & Collection Period
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h3 style="margin-bottom: 1.5rem; color: var(--turnover);">🔄 Accounts Receivable Analysis</h3>
+
+                            <h4 style="margin-bottom: 1rem;">Step 1: Calculate Average Accounts Receivable</h4>
+                            <div class="formula-box">
+                                Average AR = (AR Start + AR End) / 2
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£2.5M + £1.5M</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">2</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£2.0M</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Average AR = £2.0M</strong>
+                            </div>
+
+                            <div class="info-box" style="margin: 1.5rem 0;">
+                                <strong>Why Average?</strong> We use the average of beginning and ending balances to better represent the typical AR balance throughout the year, since the turnover ratio uses annual sales revenue.
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 2: Calculate AR Turnover</h4>
+                            <div class="formula-box">
+                                AR Turnover = Sales Revenue / Average AR
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£15.0M</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£2.0M</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">7.5 times</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ AR Turnover = 7.5 times per year</strong>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; margin: 1.5rem 0;">
+                                <strong>Interpretation:</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    The company collects its accounts receivable 7.5 times per year, meaning the AR balance "turns over" 7.5 times. This indicates relatively efficient collection practices.
+                                </p>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Step 3: Calculate Average Collection Period</h4>
+                            <div class="formula-box">
+                                Average Collection Period = 365 days / AR Turnover
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">365 days</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">7.5</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">48.67 days</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Average Collection Period = 48.67 days</strong>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Analysis & Interpretation</h4>
+                            <div style="padding: 1.5rem; background: var(--surface); border: 2px solid var(--turnover); border-radius: 0.75rem;">
+                                <strong style="color: var(--turnover);">What 48.67 Days Collection Period Means:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Collection Speed:</strong> On average, it takes about 49 days to collect payment after a sale</li>
+                                    <li><strong>Cash Flow:</strong> Faster collection means better cash flow for operations</li>
+                                    <li><strong>Credit Policy:</strong> This suggests Green Cycle offers approximately 45-60 day payment terms</li>
+                                    <li><strong>Benchmark:</strong> Typical B2B terms are 30-60 days; this is reasonable</li>
+                                    <li><strong>Efficiency:</strong> A turnover of 7.5 times is solid, indicating good credit management</li>
+                                    <li><strong>Working Capital:</strong> Faster collection reduces working capital needs</li>
+                                </ul>
+                            </div>
+
+                            <div class="warning-box" style="margin-top: 1.5rem;">
+                                <strong>🎯 Management Implications:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; opacity: 0.9;">
+                                    <li>Compare to stated credit terms (e.g., Net 30, Net 45)</li>
+                                    <li>Shorter periods = better cash flow but may reduce sales</li>
+                                    <li>Longer periods = competitive advantage but ties up cash</li>
+                                    <li>Monitor for increasing trends which may signal collection problems</li>
+                                </ul>
+                            </div>
+
+                            <table class="data-table" style="margin-top: 2rem;">
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>Value</th>
+                                        <th>Interpretation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>AR Turnover</td>
+                                        <td>7.5 times</td>
+                                        <td>Good - Efficient collection</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Collection Period</td>
+                                        <td>48.67 days</td>
+                                        <td>Reasonable for B2B</td>
+                                    </tr>
+                                    <tr>
+                                        <td>AR Growth</td>
+                                        <td>£1.5M → £2.5M</td>
+                                        <td>Growing with sales</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scenario 2: Home Comfort Retailer -->
+            <section id="scenario2" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">Scenario 2: Home Comfort Retailer</h1>
+                    <p class="page-description">Inventory Management & Cash Flow Analysis</p>
+                </div>
+
+                <div class="scenario-box">
+                    <div class="scenario-title">🏠 Company Overview</div>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        Home Comfort, a furniture retailer, is concerned that its large inventory levels are draining cash. Management wants to analyze inventory efficiency and explore ways to free up capital.
+                    </p>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Financial Item</th>
+                                <th>Amount (£)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Cost of Goods Sold (COGS)</td>
+                                <td>£800,000</td>
+                            </tr>
+                            <tr>
+                                <td>Inventory (Start of Year)</td>
+                                <td>£150,000</td>
+                            </tr>
+                            <tr>
+                                <td>Inventory (End of Year)</td>
+                                <td>£250,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q1</div>
+                            Calculate Average Inventory
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Average Inventory = (Inventory Start + Inventory End) / 2
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£150,000 + £250,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">2</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£200,000</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Average Inventory = £200,000</strong>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 1.5rem;">
+                                <strong>Why Calculate Average?</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.9;">
+                                    Using the average of beginning and ending inventory provides a more accurate representation of typical inventory levels throughout the year, which is important for calculating turnover ratios using annual COGS.
+                                </p>
+                            </div>
+
+                            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem;">
+                                <h4 style="margin-bottom: 1rem;">Inventory Trend Analysis:</h4>
+                                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                    <div style="flex: 1; background: var(--surface); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                                        <strong>Start</strong><br>
+                                        <span style="font-size: 1.5rem; color: var(--warning);">£150k</span>
+                                    </div>
+                                    <div style="flex: 1; background: var(--primary); padding: 1rem; border-radius: 0.5rem; text-align: center; color: white;">
+                                        <strong>Average</strong><br>
+                                        <span style="font-size: 1.5rem;">£200k</span>
+                                    </div>
+                                    <div style="flex: 1; background: var(--surface); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                                        <strong>End</strong><br>
+                                        <span style="font-size: 1.5rem; color: var(--danger);">£250k</span>
+                                    </div>
+                                </div>
+                                <p style="margin-top: 1rem; color: var(--text-muted); text-align: center;">
+                                    Inventory increased by £100,000 (67% growth) during the year
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q2</div>
+                            Calculate Inventory Turnover Ratio
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Inventory Turnover = COGS / Average Inventory
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£800,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£200,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">4.0 times</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Inventory Turnover = 4.0 times per year</strong>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">What This Means</h4>
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem;">
+                                <strong>Interpretation:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Turnover Rate:</strong> The company sells and replaces its entire inventory 4 times per year</li>
+                                    <li><strong>Efficiency:</strong> For furniture retail, this is relatively slow turnover</li>
+                                    <li><strong>Industry Context:</strong> Furniture typically has lower turnover than groceries or fashion</li>
+                                    <li><strong>Cash Tied Up:</strong> Lower turnover means more capital locked in inventory</li>
+                                    <li><strong>Comparison:</strong> Compare to industry benchmarks and competitors</li>
+                                </ul>
+                            </div>
+
+                            <div class="warning-box" style="margin-top: 1.5rem;">
+                                <strong>⚠️ Management Concern Validated:</strong> A turnover of only 4.0 times combined with growing inventory (£150k → £250k) confirms management's concern about capital being tied up in stock. This is draining cash that could be used elsewhere.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q3</div>
+                            Calculate Days Inventory
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Days Inventory = 365 days / Inventory Turnover
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">365 days</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">4.0</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">91.25 days</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Days Inventory = 91.25 days</strong>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Analysis & Interpretation</h4>
+                            <div style="padding: 1.5rem; background: var(--surface); border: 2px solid var(--efficiency); border-radius: 0.75rem;">
+                                <strong style="color: var(--efficiency);">What 91.25 Days Inventory Means:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Holding Period:</strong> On average, inventory sits for about 91 days before being sold</li>
+                                    <li><strong>Cash Conversion:</strong> Takes ~3 months to convert inventory investment into sales</li>
+                                    <li><strong>Storage Costs:</strong> Longer holding periods mean higher warehousing and insurance costs</li>
+                                    <li><strong>Obsolescence Risk:</strong> Furniture held too long may become outdated or damaged</li>
+                                    <li><strong>Opportunity Cost:</strong> Capital tied up in slow-moving inventory can't be invested elsewhere</li>
+                                    <li><strong>Seasonal Factors:</strong> May vary significantly by season for furniture retailers</li>
+                                </ul>
+                            </div>
+
+                            <div class="info-box" style="margin-top: 1.5rem;">
+                                <strong>💡 Quick Calculation Check:</strong> 365 ÷ 4 = 91.25 days, or roughly 3 months of inventory on hand. This confirms the turnover of 4 times per year (12 months ÷ 3 months = 4).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">Q4</div>
+                            Calculate Cash Impact of Improved Turnover
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h3 style="margin-bottom: 1.5rem; color: var(--success);">💰 Cash Release Analysis</h3>
+
+                            <div class="info-box" style="margin-bottom: 1.5rem;">
+                                <strong>Scenario:</strong> Management wants to increase Inventory Turnover from 4.0 to 5.0 times per year while keeping COGS constant at £800,000. How much cash will be released?
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 1: Calculate Required Inventory for Target Turnover</h4>
+                            <div class="formula-box">
+                                Required Inventory = COGS / Target Turnover
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£800,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">5.0</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£160,000</div>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; margin: 1.5rem 0;">
+                                <strong>Why This Works:</strong>
+                                <p style="margin-top: 0.5rem; color: var(--text-muted);">
+                                    If Inventory Turnover = COGS / Average Inventory, then:<br>
+                                    Average Inventory = COGS / Inventory Turnover<br>
+                                    Average Inventory = £800,000 / 5.0 = £160,000
+                                </p>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 2: Determine New Ending Inventory</h4>
+                            <div class="warning-box" style="margin-bottom: 1.5rem;">
+                                <strong>Assumption:</strong> To achieve an average inventory of £160,000, we need to determine the ending inventory. If we assume the start of next year should equal the end of this year, we can work backwards.
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; margin-bottom: 1.5rem;">
+                                <p style="margin-bottom: 0.5rem;">If Average = (Start + End) / 2 = £160,000</p>
+                                <p style="margin-bottom: 0.5rem;">Then Start + End = £320,000</p>
+                                <p style="margin-bottom: 0.5rem;">Current End = £250,000</p>
+                                <p style="margin-bottom: 0.5rem;">To get average of £160,000 for next period:</p>
+                                <p style="color: var(--primary); font-weight: 600;">New End should be approximately £170,000</p>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 3: Calculate Cash Released</h4>
+                            <div class="visual-calc">
+                                <div class="visual-box">Current: £250,000</div>
+                                <div class="visual-operator">−</div>
+                                <div class="visual-box">Target: £170,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£80,000</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Cash Released = £80,000</strong>
+                                <p style="margin-top: 0.5rem; opacity: 0.9;">
+                                    By reducing inventory from £250,000 to £170,000, the company frees up £80,000 in cash while maintaining sales levels.
+                                </p>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Comparison: Current vs Target State</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>Current (4.0×)</th>
+                                        <th>Target (5.0×)</th>
+                                        <th>Improvement</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Inventory Turnover</td>
+                                        <td>4.0 times</td>
+                                        <td>5.0 times</td>
+                                        <td style="color: var(--success);">+25%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Days Inventory</td>
+                                        <td>91.25 days</td>
+                                        <td>73 days</td>
+                                        <td style="color: var(--success);">-18 days</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Average Inventory</td>
+                                        <td>£200,000</td>
+                                        <td>£160,000</td>
+                                        <td style="color: var(--success);">-£40,000</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Ending Inventory</td>
+                                        <td>£250,000</td>
+                                        <td>£170,000</td>
+                                        <td style="color: var(--success);">-£80,000</td>
+                                    </tr>
+                                    <tr style="background: var(--success); color: white;">
+                                        <td><strong>Cash Released</strong></td>
+                                        <td>—</td>
+                                        <td>—</td>
+                                        <td><strong>£80,000</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <h4 style="margin: 2rem 0 1rem;">Benefits of Improved Inventory Management</h4>
+                            <div style="padding: 1.5rem; background: var(--surface); border: 2px solid var(--success); border-radius: 0.75rem;">
+                                <strong style="color: var(--success);">What £80,000 Cash Release Enables:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li><strong>Debt Reduction:</strong> Pay down loans, reducing interest expense</li>
+                                    <li><strong>Business Investment:</strong> Fund marketing, new products, or expansion</li>
+                                    <li><strong>Dividend Distribution:</strong> Return capital to shareholders</li>
+                                    <li><strong>Emergency Buffer:</strong> Strengthen financial resilience</li>
+                                    <li><strong>Lower Costs:</strong> Reduce storage and insurance expenses</li>
+                                    <li><strong>Reduced Risk:</strong> Less obsolescence and damage risk</li>
+                                    <li><strong>Flexibility:</strong> Better ability to respond to market changes</li>
+                                </ul>
+                            </div>
+
+                            <div class="warning-box" style="margin-top: 1.5rem;">
+                                <strong>🎯 Implementation Strategies:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem; opacity: 0.9;">
+                                    <li>Improve demand forecasting to reduce excess stock</li>
+                                    <li>Implement just-in-time (JIT) inventory practices</li>
+                                    <li>Negotiate faster delivery times with suppliers</li>
+                                    <li>Use promotions/discounts to clear slow-moving items</li>
+                                    <li>Better product mix management</li>
+                                    <li>Enhanced inventory tracking systems</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Multiple Choice Questions -->
+            <section id="mcq" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">Multiple Choice Assessment</h1>
+                    <p class="page-description">Test your understanding of working capital and efficiency ratios</p>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q3:</strong> Which ratio measures the amount of profit generated for every £1 of sales?
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>Inventory Turnover</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Inventory Turnover measures how many times inventory is sold and replaced, not profit per sales pound.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">B</div>
+                            <div>Return on Sales (ROS)</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> Return on Sales (also called Net Profit Margin) = Net Income / Sales Revenue × 100. It shows how much profit is generated from each pound of sales.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">C</div>
+                            <div>Return on Capital Employed (ROCE)</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> ROCE measures operating profit relative to capital employed, not profit per sales pound.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>Debt-to-Equity Ratio</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This is a solvency ratio measuring financial leverage, not profitability per sales.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q4:</strong> Capital Employed is calculated as:
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>Total Assets - Total Liabilities</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This formula gives you Total Equity, not Capital Employed.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">B</div>
+                            <div>Current Assets - Current Liabilities</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This formula gives you Working Capital, not Capital Employed.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">C</div>
+                            <div>Total Assets - Current Liabilities</div>
+                            <div class="mc-explanation">
+                                <strong>Close, but check option D.</strong> This can also work as it represents long-term capital, but option D is the more complete answer.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">D</div>
+                            <div>Total Equity + Non-Current Liabilities</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> Capital Employed = Total Equity + Non-Current Liabilities, representing the long-term capital invested in the business. This can also be calculated as Total Assets - Current Liabilities.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q5:</strong> A high Accounts Receivable Turnover ratio generally indicates:
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>Poor sales volumes</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> A high AR Turnover is generally positive, not a sign of poor sales.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">B</div>
+                            <div>Effective credit control and fast cash collection</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> A high AR Turnover means the company collects cash from customers quickly, indicating efficient credit management and strong cash flow.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">C</div>
+                            <div>Overstocking of inventory</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> AR Turnover relates to receivables collection, not inventory levels.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>High reliance on debt financing</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> AR Turnover measures collection efficiency, not financing structure.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q6:</strong> What does a ratio analysis, such as comparing two companies' ROCE, primarily allow the entrepreneur to do?
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>Predict the next year's Net Profit precisely</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Ratios help analyze past performance, not precisely predict future profits.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">B</div>
+                            <div>Compare performance by neutralizing differences in company size</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> Ratios provide standardized metrics that allow meaningful comparisons between companies of different sizes by expressing relationships proportionally rather than in absolute pounds.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">C</div>
+                            <div>Explain the reasons for specific changes in the market</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Ratios show performance metrics but don't explain underlying market causes.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>Determine the price of publicly traded shares</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> While ratios inform valuation, they don't directly determine share prices.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q7:</strong> If a company's Inventory Turnover is 6 times per year, its Days Inventory (Average Inventory Holding Period) is approximately:
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>30 days</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> 365 ÷ 6 ≠ 30
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">B</div>
+                            <div>61 days (365/6)</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> Days Inventory = 365 ÷ Turnover = 365 ÷ 6 ≈ 61 days. This means inventory sits for about 2 months before being sold.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">C</div>
+                            <div>180 days</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This would be the result if turnover was 2 times per year, not 6.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>6 days</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> This would be the result if you divided by 365 instead of dividing 365 by the turnover.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mc-question">
+                    <div class="mc-question-text">
+                        <strong>Q8:</strong> The goal of working capital management for an entrepreneur is generally to ensure:
+                    </div>
+                    <div class="mc-options">
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">A</div>
+                            <div>All long-term debts are paid immediately</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Working capital focuses on short-term obligations, not long-term debt elimination.
+                            </div>
+                        </div>
+                        <div class="mc-option correct" data-answer="correct">
+                            <div class="mc-label">B</div>
+                            <div>Current Assets are sufficient and liquid enough to meet Current Liabilities</div>
+                            <div class="mc-explanation">
+                                <strong>✓ Correct!</strong> The primary goal of working capital management is to maintain adequate liquidity to meet short-term obligations while efficiently managing current assets and liabilities.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">C</div>
+                            <div>Maximum possible debt is used to finance assets</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Working capital management focuses on short-term liquidity, not maximizing debt.
+                            </div>
+                        </div>
+                        <div class="mc-option" data-answer="wrong">
+                            <div class="mc-label">D</div>
+                            <div>Retained Earnings are always zero</div>
+                            <div class="mc-explanation">
+                                <strong>Incorrect.</strong> Retained earnings are part of equity and unrelated to working capital management goals.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box" style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 0.5rem;">📊 Answer Key</h3>
+                    <p style="opacity: 0.9;">Q3: B | Q4: D | Q5: B | Q6: B | Q7: B | Q8: B</p>
+                </div>
+            </section>
+
+            <!-- Homework: TechStart Services -->
+            <section id="homework" class="content-section">
+                <div class="page-header">
+                    <h1 class="page-title">After-Tutorial Exercise</h1>
+                    <p class="page-description">TechStart Services - Comprehensive Ratio Analysis</p>
+                </div>
+
+                <div class="scenario-box">
+                    <div class="scenario-title">💡 TechStart Services</div>
+                    <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                        Complete a comprehensive financial analysis using profitability, efficiency, and capital structure ratios
+                    </p>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Financial Item</th>
+                                <th>Amount (£)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Net Sales Revenue</td>
+                                <td>£500,000</td>
+                            </tr>
+                            <tr>
+                                <td>EBIT</td>
+                                <td>£60,000</td>
+                            </tr>
+                            <tr>
+                                <td>Total Assets (Average)</td>
+                                <td>£120,000</td>
+                            </tr>
+                            <tr>
+                                <td>Current Liabilities</td>
+                                <td>£30,000</td>
+                            </tr>
+                            <tr>
+                                <td>Total Equity</td>
+                                <td>£80,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">1</div>
+                            Return on Sales (ROS)
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Return on Sales (ROS) = (EBIT / Net Sales Revenue) × 100
+                            </div>
+
+                            <div class="info-box" style="margin: 1.5rem 0;">
+                                <strong>Note:</strong> ROS can be calculated using EBIT (operating profit margin) or Net Income (net profit margin). This exercise uses EBIT to focus on operational profitability.
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£60,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£500,000</div>
+                                <div class="visual-operator">×</div>
+                                <div class="visual-box">100</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">12.0%</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Return on Sales (ROS) = 12.0%</strong>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; margin-top: 1.5rem;">
+                                <strong>Interpretation:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>For every £1 of sales, the company generates £0.12 in operating profit</li>
+                                    <li>12% operating margin is strong for a service business</li>
+                                    <li>Indicates good cost control and pricing power</li>
+                                    <li>Shows the business model is operationally profitable</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">2</div>
+                            Asset Turnover Ratio
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <div class="formula-box">
+                                Asset Turnover Ratio = Net Sales Revenue / Total Assets
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£500,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£120,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">4.17 times</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Asset Turnover Ratio = 4.17 times</strong>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; margin-top: 1.5rem;">
+                                <strong>Interpretation:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>The company generates £4.17 in revenue for every £1 of assets</li>
+                                    <li>Very high asset turnover - excellent for a service business</li>
+                                    <li>Service businesses typically have high asset turnover because they don't require significant inventory or equipment</li>
+                                    <li>Demonstrates efficient use of assets to generate sales</li>
+                                    <li>This is significantly higher than typical manufacturing businesses (1-2 times)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">3</div>
+                            Return on Capital Employed (ROCE)
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h4 style="margin-bottom: 1rem;">Step 1: Calculate Capital Employed</h4>
+                            <div class="formula-box">
+                                Capital Employed = Total Assets - Current Liabilities
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£120,000</div>
+                                <div class="visual-operator">−</div>
+                                <div class="visual-box">£30,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£90,000</div>
+                            </div>
+
+                            <h4 style="margin: 2rem 0 1rem;">Step 2: Calculate ROCE</h4>
+                            <div class="formula-box">
+                                ROCE = (EBIT / Capital Employed) × 100
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£60,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£90,000</div>
+                                <div class="visual-operator">×</div>
+                                <div class="visual-box">100</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">66.67%</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ ROCE = 66.67%</strong>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--surface); border: 2px solid var(--capital); border-radius: 0.75rem; margin-top: 1.5rem;">
+                                <strong style="color: var(--capital);">Outstanding Performance!</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>66.67% ROCE is exceptional - among the best possible returns</li>
+                                    <li>For every £1 of long-term capital, the company generates £0.67 in operating profit</li>
+                                    <li>Far exceeds typical benchmarks (15-20% is considered good)</li>
+                                    <li>Indicates a highly profitable and efficient business model</li>
+                                    <li>Service businesses can achieve such high returns due to low capital requirements</li>
+                                    <li>This level of return creates substantial shareholder value</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <div class="accordion-title">
+                            <div class="accordion-icon">4</div>
+                            Debt-to-Equity Ratio
+                        </div>
+                        <div class="accordion-toggle">▼</div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-body">
+                            <h4 style="margin-bottom: 1rem;">Step 1: Calculate Total Liabilities</h4>
+                            <div class="info-box" style="margin-bottom: 1.5rem;">
+                                <strong>Using the Accounting Equation:</strong><br>
+                                Total Assets = Total Liabilities + Total Equity<br>
+                                Therefore: Total Liabilities = Total Assets - Total Equity
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£120,000</div>
+                                <div class="visual-operator">−</div>
+                                <div class="visual-box">£80,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">£40,000</div>
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--surface-light); border-radius: 0.5rem; margin: 1.5rem 0;">
+                                <strong>Total Liabilities = £40,000</strong>
+                            </div>
+
+                            <h4 style="margin-bottom: 1rem;">Step 2: Calculate Debt-to-Equity Ratio</h4>
+                            <div class="formula-box">
+                                Debt-to-Equity Ratio = Total Liabilities / Total Equity
+                            </div>
+
+                            <div class="visual-calc">
+                                <div class="visual-box">£40,000</div>
+                                <div class="visual-operator">÷</div>
+                                <div class="visual-box">£80,000</div>
+                                <div class="visual-operator">=</div>
+                                <div class="visual-result">0.5</div>
+                            </div>
+
+                            <div class="success-box" style="margin-top: 1.5rem;">
+                                <strong>✓ Debt-to-Equity Ratio = 0.5</strong>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--surface-light); border-radius: 0.75rem; margin-top: 1.5rem;">
+                                <strong>Interpretation:</strong>
+                                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: var(--text-muted);">
+                                    <li>For every £1 of equity, the company has £0.50 in debt</li>
+                                    <li>Conservative capital structure with low financial risk</li>
+                                    <li>Ratio below 1.0 indicates equity exceeds debt</li>
+                                    <li>Strong financial position with room to borrow if needed</li>
+                                    <li>Balanced approach between debt and equity financing</li>
+                                </ul>
+                            </div>
+
+                            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--surface); border: 2px solid var(--border); border-radius: 0.75rem;">
+                                <h4 style="margin-bottom: 1rem;">Capital Structure Breakdown:</h4>
+                                <div style="display: flex; gap: 1rem;">
+                                    <div style="flex: 0.333; background: var(--danger); padding: 1rem; border-radius: 0.5rem; text-align: center; color: white;">
+                                        <strong>Debt</strong><br>
+                                        £40,000<br>
+                                        <small>(33.3%)</small>
+                                    </div>
+                                    <div style="flex: 0.667; background: var(--success); padding: 1rem; border-radius: 0.5rem; text-align: center; color: white;">
+                                        <strong>Equity</strong><br>
+                                        £80,000<br>
+                                        <small>(66.7%)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, var(--success), var(--capital)); border-radius: 1rem; color: white;">
+                    <h3 style="margin-bottom: 1.5rem;">🎯 Overall Assessment: TechStart Services</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Profitability</strong><br>
+                            <span style="font-size: 1.5rem;">Excellent ✓</span><br>
+                            <small>ROS: 12.0%</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Efficiency</strong><br>
+                            <span style="font-size: 1.5rem;">Outstanding ✓</span><br>
+                            <small>ATO: 4.17 times</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Capital Return</strong><br>
+                            <span style="font-size: 1.5rem;">Exceptional ✓</span><br>
+                            <small>ROCE: 66.67%</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Leverage</strong><br>
+                            <span style="font-size: 1.5rem;">Conservative ✓</span><br>
+                            <small>D/E: 0.5</small>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.15); padding: 1.5rem; border-radius: 0.75rem;">
+                        <strong>Investment Verdict:</strong>
+                        <p style="margin-top: 0.5rem; opacity: 0.95;">
+                            TechStart Services demonstrates exceptional financial performance across all metrics. The company combines strong operational profitability (12% ROS), outstanding asset efficiency (4.17× turnover), exceptional capital returns (66.67% ROCE), and conservative leverage (0.5 D/E). This is an extremely attractive investment with a proven, scalable business model typical of successful service businesses with low capital requirements and high returns.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 1rem; color: white; text-align: center;">
+                    <h3 style="margin-bottom: 1rem;">🎓 Tutorial 5 Complete!</h3>
+                    <p style="opacity: 0.9; margin-bottom: 1.5rem;">You've mastered working capital management and efficiency analysis</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Capital Employed</strong><br>
+                            <small>& ROCE</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Working Capital</strong><br>
+                            <small>Management</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>AR Turnover</strong><br>
+                            <small>Collection Analysis</small>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 0.5rem;">
+                            <strong>Inventory</strong><br>
+                            <small>Efficiency</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                this.classList.add('active');
+                
+                const sectionId = this.dataset.section;
+                document.getElementById(sectionId).classList.add('active');
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Accordion Toggle
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const item = this.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+
+        // Multiple Choice Selection
+        document.querySelectorAll('.mc-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const siblings = this.parentElement.querySelectorAll('.mc-option');
+                siblings.forEach(sib => sib.classList.remove('selected', 'incorrect'));
+                
+                this.classList.add('selected');
+                
+                if (this.dataset.answer === 'wrong') {
+                    this.classList.add('incorrect');
+                }
+            });
+        });
+
+        // Concept card hover effects
+        document.querySelectorAll('.concept-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
