@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial 7: Formative Feedback - Group Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #2E5BFF;
+            --secondary-blue: #1A3F9F;
+            --light-blue: #6B8AFF;
+            --accent-blue: #4169E1;
+            --bg-light: rgba(240, 245, 255, 0.5);
+            --bg-card: rgba(255, 255, 255, 0.7);
+            --shadow-light: rgba(46, 91, 255, 0.1);
+            --shadow-dark: rgba(26, 63, 159, 0.2);
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --text-muted: #7a7a9a;
+            --border: rgba(46, 91, 255, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, rgba(240, 245, 255, 0.3) 0%, rgba(230, 240, 255, 0.5) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Neumorphic Effects */
+        .neuro-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 8px 8px 16px var(--shadow-dark),
+                       -8px -8px 16px rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--border);
+        }
+
+        .neuro-inset {
+            background: var(--bg-light);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            box-shadow: inset 4px 4px 8px var(--shadow-dark),
+                       inset -4px -4px 8px rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--border);
+        }
+
+        .neuro-button {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 4px 4px 8px var(--shadow-dark),
+                       -4px -4px 8px rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .neuro-button:hover {
+            box-shadow: 2px 2px 4px var(--shadow-dark),
+                       -2px -2px 4px rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .neuro-button:active {
+            box-shadow: inset 2px 2px 4px var(--shadow-dark),
+                       inset -2px -2px 4px rgba(255, 255, 255, 0.3);
+            transform: translateY(0);
+        }
+
+        /* Header */
+        .header {
+            padding: 2rem 4rem;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-left h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .header-left p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .header-right .course-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-blue);
+        }
+
+        .header-right .institution {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Navigation */
+        .nav-container {
+            padding: 1.5rem 4rem;
+            background: var(--bg-light);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 100px;
+            z-index: 999;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 2px 2px 4px var(--shadow-light);
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 8px var(--shadow-dark);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+            color: white;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 4rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Header */
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            padding: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 4px 4px 8px var(--shadow-dark);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--secondary-blue);
+        }
+
+        .card-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Collapsible */
+        .collapsible-item {
+            margin-bottom: 1rem;
+        }
+
+        .collapsible-header {
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--secondary-blue);
+        }
+
+        .collapsible-icon {
+            transition: transform 0.3s ease;
+            color: var(--primary-blue);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .collapsible-item.active .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+
+        .collapsible-item.active .collapsible-content {
+            max-height: 3000px;
+        }
+
+        .collapsible-body {
+            padding: 1.5rem;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: var(--bg-light);
+            color: var(--secondary-blue);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--bg-light);
+        }
+
+        /* Do/Don't Cards */
+        .do-dont-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .do-card {
+            padding: 2rem;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .dont-card {
+            padding: 2rem;
+            border-left: 4px solid #FF4757;
+        }
+
+        .do-dont-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .do-icon {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+        }
+
+        .dont-icon {
+            color: #FF4757;
+            font-size: 1.5rem;
+        }
+
+        .example-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .example-list li {
+            padding: 0.75rem 0;
+            color: var(--text-secondary);
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .example-list li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        /* Rubric Breakdown */
+        .rubric-card {
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .rubric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .rubric-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary-blue);
+        }
+
+        .rubric-weight {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            padding: 0.5rem 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+        }
+
+        .rubric-levels {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .rubric-level {
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .rubric-level:hover {
+            transform: translateY(-4px);
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .level-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-blue);
+        }
+
+        .level-range {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .level-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Popover */
+        .popover-trigger {
+            display: inline-block;
+            color: var(--primary-blue);
+            text-decoration: underline;
+            cursor: help;
+            position: relative;
+        }
+
+        .popover-content {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 4px 4px 16px var(--shadow-dark);
+            border: 1px solid var(--border);
+            width: 300px;
+            z-index: 1000;
+            margin-bottom: 0.5rem;
+        }
+
+        .popover-trigger:hover .popover-content {
+            display: block;
+        }
+
+        /* Progress Indicator */
+        .progress-container {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 25px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 3px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.completed .step-circle {
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+            border-color: var(--primary-blue);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+            max-width: 100px;
+        }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: rgba(46, 91, 255, 0.05);
+            border-color: var(--primary-blue);
+        }
+
+        .alert-warning {
+            background: rgba(255, 152, 0, 0.05);
+            border-color: #FF9800;
+        }
+
+        .alert-success {
+            background: rgba(76, 175, 80, 0.05);
+            border-color: #4CAF50;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-blue);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem 4rem;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-top: 2px solid var(--border);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-right {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .rubric-levels {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1.5rem 2rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .nav-container {
+                padding: 1rem 2rem;
+            }
+
+            .container {
+                padding: 2rem;
+            }
+
+            .card-grid,
+            .do-dont-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rubric-levels {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            background-color: var(--secondary-blue);
+            color: white;
+            text-align: center;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Score Grid */
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .score-card {
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .score-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .score-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>Tutorial 7: Formative Feedback</h1>
+                <p>Draft Presentation Review Session</p>
+            </div>
+            <div class="header-right">
+                <div class="course-title">Entrepreneurial Capital</div>
+                <div class="institution">University of Strathclyde | 2025</div>
+                <div class="institution">Tutor: Harry Patria</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <div class="nav-container">
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="showSection('overview')">Overview</div>
+            <div class="nav-tab" onclick="showSection('rubric')">Rubric Breakdown</div>
+            <div class="nav-tab" onclick="showSection('content')">Content Strategy</div>
+            <div class="nav-tab" onclick="showSection('delivery')">Delivery Excellence</div>
+            <div class="nav-tab" onclick="showSection('analysis')">Critical Analysis</div>
+            <div class="nav-tab" onclick="showSection('peer')">Peer Assessment</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Overview Section -->
+        <section id="overview" class="content-section active">
+            <div class="section-header">
+                <h2 class="section-title">Assessment Overview</h2>
+                <p class="section-subtitle">Understanding the evaluation framework and key success factors</p>
+            </div>
+
+            <div class="progress-container neuro-card">
+                <div class="progress-steps">
+                    <div class="progress-line"></div>
+                    <div class="progress-step completed">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Strategic Content</div>
+                    </div>
+                    <div class="progress-step completed">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Persuasion</div>
+                    </div>
+                    <div class="progress-step completed">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Analysis</div>
+                    </div>
+                    <div class="progress-step completed">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Q&A Response</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card neuro-card">
+                    <div class="card-header">
+                        <div class="card-icon">40%</div>
+                        <h3 class="card-title">Strategic Content & Viability</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Your strategy must demonstrate rigorous evaluation of options with clear justification. The board expects you to address the core trade-offs without summarizing the case unnecessarily.</p>
+                        <div class="alert alert-info" style="margin-top: 1rem;">
+                            <div class="alert-title">Focus Areas</div>
+                            Evaluate alternatives rigorously, justify your recommendation with evidence, and directly address the board's concerns about viability.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card neuro-card">
+                    <div class="card-header">
+                        <div class="card-icon">30%</div>
+                        <h3 class="card-title">Persuasion & Communication</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Maintain character as the leadership team throughout. Your delivery must be confident, unified, and authentic. The board expects professional communication that holds their attention.</p>
+                        <div class="alert alert-warning" style="margin-top: 1rem;">
+                            <div class="alert-title">Critical Success Factor</div>
+                            Stay in character consistently. You are not consultants presenting findings—you are the founders fighting for your company's future.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card neuro-card">
+                    <div class="card-header">
+                        <div class="card-icon">20%</div>
+                        <h3 class="card-title">Analysis & Critical Thinking</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Apply advanced frameworks and concepts from the module. Demonstrate understanding of strategic trade-offs and identify key factors influencing the decision with solid evidence.</p>
+                        <div class="alert alert-success" style="margin-top: 1rem;">
+                            <div class="alert-title">Excellence Marker</div>
+                            Move beyond financial figures to critically assess the strategic implications using module concepts and external sources.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card neuro-card">
+                    <div class="card-header">
+                        <div class="card-icon">10%</div>
+                        <h3 class="card-title">Response to Q&A</h3>
+                    </div>
+                    <div class="card-content">
+                        <p>Handle questions with confidence and clarity. Demonstrate deep understanding by addressing challenging questions professionally, even under pressure.</p>
+                        <div class="alert alert-info" style="margin-top: 1rem;">
+                            <div class="alert-title">Preparation Tip</div>
+                            Anticipate board concerns and prepare responses collectively as a team. Show solid grasp of subject matter.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rubric-card neuro-card">
+                <h3 class="card-title" style="margin-bottom: 1rem;">Key Distinctions Across Performance Levels</h3>
+                <div class="table-container">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Pass (50-59%)</th>
+                                <th>Merit (60-69%)</th>
+                                <th>Distinction (70%+)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Strategic Clarity</strong></td>
+                                <td>Strategy presented but evaluation may be superficial</td>
+                                <td>Clear and viable strategy with well-reasoned justification</td>
+                                <td>Exceptionally creative strategy with rigorous evaluation of multiple options</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Character Consistency</strong></td>
+                                <td>May occasionally break character or appear disorganized</td>
+                                <td>Consistently stays in character with confident delivery</td>
+                                <td>Authentic "in-character" presence throughout with fluid, engaging delivery</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Analytical Depth</strong></td>
+                                <td>Descriptive analysis with weak application of frameworks</td>
+                                <td>Sound analysis with effective demonstration of module concepts</td>
+                                <td>Deep, insightful analysis with advanced concepts from module and external sources</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Board Engagement</strong></td>
+                                <td>Can answer most questions but may lack depth</td>
+                                <td>Handles most questions effectively with solid grasp</td>
+                                <td>Responds to all questions with exceptional depth and confidence</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rubric Breakdown Section -->
+        <section id="rubric" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Detailed Rubric Analysis</h2>
+                <p class="section-subtitle">Comprehensive breakdown of assessment criteria with performance indicators</p>
+            </div>
+
+            <!-- Strategic Content -->
+            <div class="collapsible-item neuro-card">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <span>Strategic Content & Viability (40%)</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="rubric-levels">
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Minimum Pass</div>
+                                <div class="level-range">Below 50%</div>
+                                <div class="level-description">
+                                    Strategy unclear or illogical. Presentation fails to address core problem. Lacks clear recommendation or spends excessive time on irrelevant information.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Pass</div>
+                                <div class="level-range">50-59%</div>
+                                <div class="level-description">
+                                    Strategy presented with logical structure but evaluation of alternatives may be superficial. Some time wasted on summarizing case aspects or defining basic concepts.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Merit</div>
+                                <div class="level-range">60-69%</div>
+                                <div class="level-description">
+                                    Clear and viable strategy. Effectively evaluates core options with well-reasoned justification. Focuses on strategy and avoids unnecessary background or generic definitions.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Distinction</div>
+                                <div class="level-range">70%+</div>
+                                <div class="level-description">
+                                    Exceptionally creative and viable strategy supported by rigorous evaluation. Flawlessly addresses core trade-offs demonstrating deep understanding of complexities.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" style="margin-top: 2rem;">
+                            <div class="alert-title">Critical Guidance</div>
+                            <ul class="example-list">
+                                <li>Do not summarize the case—the board knows it already</li>
+                                <li>Focus your time on evaluating the strategic options and justifying your choice</li>
+                                <li>Address the central trade-off: growth vs. mission alignment</li>
+                                <li>Demonstrate that you understand the implications of each funding offer</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Persuasion & Communication -->
+            <div class="collapsible-item neuro-card">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <span>Persuasion & Communication (30%)</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="rubric-levels">
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Minimum Pass</div>
+                                <div class="level-range">Below 50%</div>
+                                <div class="level-description">
+                                    Lacks clear persuasive message. Group fails to stay in character, appears disorganized, or delivery is weak, making it difficult to follow or believe the strategy.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Pass</div>
+                                <div class="level-range">50-59%</div>
+                                <div class="level-description">
+                                    Generally persuasive but may lack strong unified voice or confident delivery. May occasionally break character, or message not as focused or compelling as it should be.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Merit</div>
+                                <div class="level-range">60-69%</div>
+                                <div class="level-description">
+                                    Persuasive and well-structured. Group consistently stays in character with confident and unified delivery. Message is clear and presentation effectively holds audience's attention.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Distinction</div>
+                                <div class="level-range">70%+</div>
+                                <div class="level-description">
+                                    Highly persuasive and compelling. Maintains confident, unified, authentic "in-character" presence throughout. Delivery is fluid and engaging with consistently reinforced strong rhetorical skills.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning" style="margin-top: 2rem;">
+                            <div class="alert-title">Character Consistency Matters</div>
+                            <ul class="example-list">
+                                <li>You are Maya, Leo, and the leadership team—not external consultants</li>
+                                <li>Speak with passion about "our company," "our users," "our mission"</li>
+                                <li>Show genuine conviction and emotional investment in the decision</li>
+                                <li>Maintain unified voice—avoid contradicting each other or appearing uncertain</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis & Critical Thinking -->
+            <div class="collapsible-item neuro-card">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <span>Analysis & Critical Thinking (20%)</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="rubric-levels">
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Minimum Pass</div>
+                                <div class="level-range">Below 50%</div>
+                                <div class="level-description">
+                                    Analysis is weak, contains significant errors, or is absent. Recommendation not supported by evidence or based on misunderstanding of the case.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Pass</div>
+                                <div class="level-range">50-59%</div>
+                                <div class="level-description">
+                                    Analysis is descriptive rather than critical. May rely on superficial observations or fail to apply core module frameworks effectively. Links between analysis and recommendation are weak.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Merit</div>
+                                <div class="level-range">60-69%</div>
+                                <div class="level-description">
+                                    Sound and relevant analysis demonstrating understanding of module concepts. Successfully identifies and analyzes key factors influencing decision, providing solid foundation for recommendation.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Distinction</div>
+                                <div class="level-range">70%+</div>
+                                <div class="level-description">
+                                    Deep and insightful analysis moving beyond simple financial figures. Applies advanced concepts from module and external sources to support strategic choice critically assessing trade-offs.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-success" style="margin-top: 2rem;">
+                            <div class="alert-title">Analytical Excellence</div>
+                            <ul class="example-list">
+                                <li>Apply frameworks from the module (not generic business concepts)</li>
+                                <li>Go beyond numbers—discuss strategic implications and long-term consequences</li>
+                                <li>Identify key trade-offs and demonstrate critical evaluation</li>
+                                <li>Support your analysis with evidence and logical reasoning</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Response to Q&A -->
+            <div class="collapsible-item neuro-card">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <span>Response to Q&A (10%)</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="rubric-levels">
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Minimum Pass</div>
+                                <div class="level-range">Below 50%</div>
+                                <div class="level-description">
+                                    Unable to answer key questions or provides responses demonstrating lack of understanding. Q&A session undermines credibility of presentation.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Pass</div>
+                                <div class="level-range">50-59%</div>
+                                <div class="level-description">
+                                    Can answer most questions but responses may lack depth or confidence. May struggle with more challenging or nuanced questions.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Merit</div>
+                                <div class="level-range">60-69%</div>
+                                <div class="level-description">
+                                    Handles most questions effectively, providing clear and concise answers. Demonstrates solid grasp of subject matter, even under pressure.
+                                </div>
+                            </div>
+                            <div class="rubric-level neuro-inset">
+                                <div class="level-title">Distinction</div>
+                                <div class="level-range">70%+</div>
+                                <div class="level-description">
+                                    Responds to all questions with confidence, clarity, and exceptional depth of knowledge. Handles difficult questions professionally and collectively, reinforcing expertise and credibility.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" style="margin-top: 2rem;">
+                            <div class="alert-title">Q&A Preparation Strategy</div>
+                            <ul class="example-list">
+                                <li>Anticipate board concerns about your chosen path</li>
+                                <li>Prepare responses to counterarguments</li>
+                                <li>Distribute expertise across team members</li>
+                                <li>Practice handling challenging questions as a unified team</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Strategy Section -->
+        <section id="content" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Content Strategy Guidelines</h2>
+                <p class="section-subtitle">Building a compelling narrative with strategic focus</p>
+            </div>
+
+            <div class="do-dont-grid">
+                <div class="do-card neuro-card">
+                    <div class="do-dont-title">
+                        <span class="do-icon">✓</span>
+                        <span>DO: Strategic Focus</span>
+                    </div>
+                    <ul class="example-list">
+                        <li>Open with your unified recommendation immediately</li>
+                        <li>Focus 70% of time on evaluating the two funding offers</li>
+                        <li>Address the core trade-off: financial sustainability vs. mission integrity</li>
+                        <li>Use financial analysis to support strategic arguments</li>
+                        <li>Anticipate and pre-emptively address board concerns</li>
+                        <li>Connect your recommendation to long-term company vision</li>
+                        <li>Show how your choice ensures both survival and mission</li>
+                    </ul>
+                </div>
+
+                <div class="dont-card neuro-card">
+                    <div class="do-dont-title">
+                        <span class="dont-icon">✗</span>
+                        <span>DON'T: Time Wasters</span>
+                    </div>
+                    <ul class="example-list">
+                        <li>Summarize the case background for the first 5 minutes</li>
+                        <li>Define basic financial terms the board already knows</li>
+                        <li>Present the two offers without analysis or evaluation</li>
+                        <li>Leave your recommendation ambiguous or unclear</li>
+                        <li>Ignore the opposing perspective on your team or board</li>
+                        <li>Focus solely on numbers without strategic implications</li>
+                        <li>Present as if you're external consultants, not founders</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="rubric-card neuro-card">
+                <div class="rubric-header">
+                    <h3 class="rubric-title">Recommended Structure</h3>
+                </div>
+                <div class="table-container">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Section</th>
+                                <th>Time Allocation</th>
+                                <th>Key Content</th>
+                                <th>Owner</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Opening & Context</strong></td>
+                                <td>1-2 minutes</td>
+                                <td>
+                                    Brief situation recap (we know the board knows)
+                                    <br>Clear statement of recommendation
+                                    <br>Roadmap of presentation
+                                </td>
+                                <td>CEO (Leo)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Option Evaluation</strong></td>
+                                <td>6-7 minutes</td>
+                                <td>
+                                    Rigorous analysis of Ignite Capital offer
+                                    <br>Rigorous analysis of Future Forward offer
+                                    <br>Strategic and financial trade-offs
+                                    <br>Long-term implications of each path
+                                </td>
+                                <td>CFO + CSO</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Recommendation Justification</strong></td>
+                                <td>4-5 minutes</td>
+                                <td>
+                                    Why your chosen path is optimal
+                                    <br>How it addresses both survival and mission
+                                    <br>Evidence and framework support
+                                    <br>Risk mitigation strategies
+                                </td>
+                                <td>CPO (Maya) + CMO</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Addressing Concerns</strong></td>
+                                <td>2-3 minutes</td>
+                                <td>
+                                    Acknowledge opposing view validity
+                                    <br>Explain how your strategy mitigates concerns
+                                    <br>Reinforce unified team position
+                                </td>
+                                <td>CEO + Board Liaison</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Q&A</strong></td>
+                                <td>5 minutes</td>
+                                <td>
+                                    Handle board questions with confidence
+                                    <br>Demonstrate deep understanding
+                                    <br>Maintain unified voice
+                                </td>
+                                <td>All Team</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card neuro-card" style="margin-top: 2rem;">
+                <h3 class="card-title" style="margin-bottom: 1rem;">Example Opening Scenarios</h3>
+                
+                <div class="alert alert-success">
+                    <div class="alert-title">Strong Opening Example</div>
+                    <p>"Board members, thank you for your time. We're here today with a unified recommendation that we believe is the only viable path for LingoLearn. After rigorous analysis, we recommend accepting the Future Forward Fund investment of $12 million. Over the next 15 minutes, we'll demonstrate why this path ensures both our financial sustainability and preserves the core mission that makes LingoLearn valuable in the first place."</p>
+                </div>
+
+                <div class="alert alert-warning" style="margin-top: 1rem;">
+                    <div class="alert-title">Weak Opening Example (Avoid)</div>
+                    <p>"Hello everyone. Today we're going to talk about LingoLearn, which is a language learning app founded three years ago by Maya and Leo. The company has 3.5 million users and offers freemium subscriptions. They've received two funding offers, and we'll explain what those are..."</p>
+                    <p style="margin-top: 0.5rem; color: #FF4757;"><strong>Problems:</strong> Wastes time summarizing known information, no clear recommendation, no strategic focus, breaks character.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Delivery Excellence Section -->
+        <section id="delivery" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Delivery & Communication Excellence</h2>
+                <p class="section-subtitle">Maintaining character and persuasive impact throughout</p>
+            </div>
+
+            <div class="card-grid">
+                <div class="card neuro-card">
+                    <div class="card-header">
+                        <div class="card-icon">1</div>
+                        <h3 class="card-title">Character Consistency</h3>
+                    </div>
+                    <div class="card-content">
+                        <p><strong>You are the founders and leadership team, not consultants.</strong></p>
+                        <div class="alert alert-info" style="margin-top: 1rem;">
+                            <div class="alert-title">Language Matters</div>
+                            <p><strong>Use:</strong> "Our company," "Our users," "Our mission," "We built this," "We're fighting for"</p>
+                            <p style="margin-top: 0.5rem;"><strong>Avoid:</strong> "The company should," "They could," "LingoLearn's founders believe," "Our analysis shows that LingoLearn..."</p>
+                        </div>
+                        <ul class="example-list" style="margin-top: 1rem;">
+                            <li>Show emotional investment in the decision</li>
+                            <li>Speak with passion and conviction about the mission</li>
+                            <li>Acknowledge internal tension between Maya and Leo's perspectives</li>
+                            <li>Demonstrate that you've come together as a unified leadership team</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card neuro-card">
+                    <div class="card-header">
+                        <div class="card-icon">2</div>
+                        <h3 class="card-title">Unified Voice</h3>
+                    </div>
+                    <div class="card-content">
+                        <p><strong>Present as a cohesive leadership team with a single, clear recommendation.</strong></p>
+                        <ul class="example-list">
+                            <li>Ensure smooth transitions between speakers</li>
+                            <li>Build on each other's points rather than introducing contradictions</li>
+                            <li>Support fellow team members during Q&A</li>
+                            <li>Avoid hedging or showing uncertainty about your recommendation</li>
+                            <li>Demonstrate that all team members are aligned behind the chosen path</li>
+                        </ul>
+                        <div class="alert alert-warning" style="margin-top: 1rem;">
+                            <div class="alert-title">Warning Signs</div>
+                            If team members contradict each other, show uncertainty, or fail to support the unified recommendation, this significantly damages persuasiveness.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="do-dont-grid">
+                <div class="do-card neuro-card">
+                    <div class="do-dont-title">
+                        <span class="do-icon">✓</span>
+                        <span>DO: Professional Delivery</span>
+                    </div>
+                    <ul class="example-list">
+                        <li>Maintain eye contact with the "board" (audience/camera)</li>
+                        <li>Use confident body language and vocal tone</li>
+                        <li>Practice transitions between speakers</li>
+                        <li>Speak at appropriate pace—not too rushed</li>
+                        <li>Use pauses for emphasis on key points</li>
+                        <li>Refer to each other by role (Maya/CPO, Leo/CEO)</li>
+                        <li>Show engagement when others are speaking</li>
+                    </ul>
+                </div>
+
+                <div class="dont-card neuro-card">
+                    <div class="do-dont-title">
+                        <span class="dont-icon">✗</span>
+                        <span>DON'T: Delivery Pitfalls</span>
+                    </div>
+                    <ul class="example-list">
+                        <li>Read directly from slides for extended periods</li>
+                        <li>Use academic or overly formal language</li>
+                        <li>Appear disengaged when teammates are speaking</li>
+                        <li>Fumble transitions or contradict each other</li>
+                        <li>Show uncertainty about your recommendation</li>
+                        <li>Break character by referring to yourselves in third person</li>
+                        <li>Apologize for time management or technical issues</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="rubric-card neuro-card" style="margin-top: 2rem;">
+                <div class="rubric-header">
+                    <h3 class="rubric-title">Role Distribution Best Practices</h3>
+                </div>
+                <div class="table-container">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Key Responsibilities</th>
+                                <th>Delivery Tips</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CEO (Leo Chen)</strong></td>
+                                <td>Opening, closing, strategic synthesis, handling ultimate decision</td>
+                                <td>Speak with authority and pragmatism. Balance mission with business reality.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CPO (Maya Sanchez)</strong></td>
+                                <td>Mission articulation, user community value, product vision</td>
+                                <td>Show passion and emotional connection. Emphasize social impact authentically.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CFO</strong></td>
+                                <td>Financial analysis, valuation comparison, runway calculations</td>
+                                <td>Present numbers clearly and connect them to strategic implications.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CSO</strong></td>
+                                <td>Long-term strategy analysis, market positioning, growth implications</td>
+                                <td>Demonstrate strategic thinking beyond immediate financial concerns.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>CMO</strong></td>
+                                <td>Brand value, user base analysis, reputation management</td>
+                                <td>Connect organic growth and community trust to business value.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Board Liaison</strong></td>
+                                <td>Coordination, addressing board concerns, ensuring smooth flow</td>
+                                <td>Act as the glue between team members. Handle meta-concerns.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Critical Analysis Section -->
+        <section id="analysis" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Critical Analysis Framework</h2>
+                <p class="section-subtitle">Demonstrating strategic thinking and analytical rigor</p>
+            </div>
+
+            <div class="card neuro-card" style="margin-bottom: 2rem;">
+                <h3 class="card-title" style="margin-bottom: 1rem;">Moving Beyond Surface-Level Analysis</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    The board has already read the case. They know the numbers. What they need from you is <strong>critical evaluation of the strategic implications</strong> of each funding offer.
+                </p>
+                
+                <div class="do-dont-grid">
+                    <div style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px;">
+                        <h4 style="color: var(--secondary-blue); margin-bottom: 1rem;">Surface-Level (Insufficient)</h4>
+                        <p style="color: var(--text-secondary);">"Ignite Capital offers $25 million at a $60 million valuation, giving them 29.4% stake. This is more money than Future Forward's $12 million offer."</p>
+                    </div>
+                    <div style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px;">
+                        <h4 style="color: var(--primary-blue); margin-bottom: 1rem;">Strategic Analysis (Strong)</h4>
+                        <p style="color: var(--text-secondary);">"While Ignite's $25 million provides 10 months more runway, their requirement to pivot to enterprise clients fundamentally changes our business model. This means abandoning our 3.5 million organic users who trust us, destroying the brand equity we've built, and entering a competitive B2B market where we have no relationships or proof of concept."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible-item neuro-card">
+                <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                    <span>Key Analysis Dimensions to Address</span>
+                    <span class="collapsible-icon">▼</span>
+                </div>
+                <div class="collapsible-content">
+                    <div class="collapsible-body">
+                        <div class="card-grid">
+                            <div style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px;">
+                                <h4 style="color: var(--secondary-blue); margin-bottom: 1rem;">Financial Sustainability</h4>
+                                <ul class="example-list">
+                                    <li>Runway extension with each option</li>
+                                    <li>Path to profitability feasibility</li>
+                                    <li>Capital efficiency and burn rate implications</li>
+                                    <li>Revenue model viability under each scenario</li>
+                                </ul>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px;">
+                                <h4 style="color: var(--secondary-blue); margin-bottom: 1rem;">Strategic Positioning</h4>
+                                <ul class="example-list">
+                                    <li>Market positioning changes</li>
+                                    <li>Competitive landscape in new vs. current market</li>
+                                    <li>Brand value and reputation implications</li>
+                                    <li>Long-term growth trajectory</li>
+                                </ul>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px;">
+                                <h4 style="color: var(--secondary-blue); margin-bottom: 1rem;">Mission Alignment</h4>
+                                <ul class="example-list">
+                                    <li>Impact on core user community</li>
+                                    <li>Social mission preservation vs. compromise</li>
+                                    <li>Team motivation and retention</li>
+                                    <li>Founder values and vision realization</li>
+                                </ul>
+                            </div>
+
+                            <div style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px;">
+                                <h4 style="color: var(--secondary-blue); margin-bottom: 1rem;">Risk Assessment</h4>
+                                <ul class="example-list">
+                                    <li>Execution risks of each path</li>
+                                    <li>Market entry barriers (if pivoting)</li>
+                                    <li>Investor expectation management</li>
+                                    <li>Downside protection and exit scenarios</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rubric-card neuro-card" style="margin-top: 2rem;">
+                <div class="rubric-header">
+                    <h3 class="rubric-title">Analytical Framework Example</h3>
+                </div>
+                
+                <div style="padding: 2rem; background: var(--bg-light); border-radius: 12px; margin-top: 1rem;">
+                    <h4 style="color: var(--secondary-blue); margin-bottom: 1rem;">Comparative Analysis Structure</h4>
+                    <div class="table-container">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Evaluation Criteria</th>
+                                    <th>Ignite Capital Path</th>
+                                    <th>Future Forward Path</th>
+                                    <th>Analysis Depth</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Capital Injection</strong></td>
+                                    <td>$25M (29.4% equity)</td>
+                                    <td>$12M (21% equity)</td>
+                                    <td>Don't just state amounts—analyze runway extension, dilution impact, and what capital enables</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Business Model</strong></td>
+                                    <td>Pivot to B2B enterprise</td>
+                                    <td>Continue freemium B2C</td>
+                                    <td>Evaluate market attractiveness, competitive dynamics, execution feasibility of each model</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>User Impact</strong></td>
+                                    <td>Abandon existing 3.5M users</td>
+                                    <td>Expand to new underserved regions</td>
+                                    <td>Consider brand equity, community trust, organic growth value, and reputation risks</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Growth Strategy</strong></td>
+                                    <td>Target corporate clients in developed markets</td>
+                                    <td>Scale in developing markets</td>
+                                    <td>Assess market size, entry barriers, revenue potential, and alignment with core competencies</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mission Alignment</strong></td>
+                                    <td>Compromises social mission</td>
+                                    <td>Preserves and extends mission</td>
+                                    <td>Evaluate founder values, team motivation, and long-term brand differentiation</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info" style="margin-top: 2rem;">
+                <div class="alert-title">Excellence Markers in Analysis</div>
+                <ul class="example-list">
+                    <li>Apply module frameworks (not generic business concepts) to support your analysis</li>
+                    <li>Reference external sources that strengthen your strategic argument</li>
+                    <li>Identify second-order effects and long-term consequences beyond immediate financial impact</li>
+                    <li>Demonstrate understanding of stakeholder interests and trade-offs</li>
+                    <li>Show critical evaluation—acknowledge strengths and weaknesses of both options honestly</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Peer Assessment Section -->
+        <section id="peer" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Peer Assessment Guidelines</h2>
+                <p class="section-subtitle">Understanding the contribution evaluation process</p>
+            </div>
+
+            <div class="alert alert-info">
+                <div class="alert-title">Purpose of Peer Assessment</div>
+                <p>The peer assessment indicates to the marker if someone contributed significantly more or significantly less than the team average. It does not affect the overall quality grade of your presentation—only the distribution of marks within the team.</p>
+            </div>
+
+            <div class="score-grid">
+                <div class="score-card neuro-card">
+                    <div class="score-number">1</div>
+                    <div class="score-label">Significantly Lower Contribution</div>
+                </div>
+                <div class="score-card neuro-card">
+                    <div class="score-number">2</div>
+                    <div class="score-label">Slightly Lower Contribution</div>
+                </div>
+                <div class="score-card neuro-card">
+                    <div class="score-number">3</div>
+                    <div class="score-label">Average Team Contribution</div>
+                </div>
+                <div class="score-card neuro-card">
+                    <div class="score-number">4</div>
+                    <div class="score-label">Slightly Higher Contribution</div>
+                </div>
+                <div class="score-card neuro-card">
+                    <div class="score-number">5</div>
+                    <div class="score-label">Significantly Higher Contribution</div>
+                </div>
+            </div>
+
+            <div class="card neuro-card" style="margin-top: 2rem;">
+                <h3 class="card-title" style="margin-bottom: 1rem;">How to Evaluate Contribution</h3>
+                <div class="table-container">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Contribution Area</th>
+                                <th>Evidence of Strong Contribution</th>
+                                <th>Evidence of Weak Contribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Research & Analysis</strong></td>
+                                <td>Conducted thorough research, contributed substantive analytical insights, applied module frameworks</td>
+                                <td>Minimal research effort, relied on others' analysis, no independent contribution to strategic thinking</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Content Development</strong></td>
+                                <td>Drafted significant portions of presentation, refined arguments, created compelling narratives</td>
+                                <td>Did not contribute to slide development or content creation, minimal input on messaging</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Role Performance</strong></td>
+                                <td>Mastered assigned role, delivered confidently, contributed meaningfully during presentation</td>
+                                <td>Underprepared for role, weak delivery, minimal presence during presentation</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Collaboration</strong></td>
+                                <td>Attended all meetings, met deadlines, responsive to team communication, constructive feedback</td>
+                                <td>Missed meetings, late on deliverables, poor communication, unhelpful or absent during team work</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Q&A Preparation</strong></td>
+                                <td>Anticipated questions, prepared responses, contributed during practice sessions, handled questions well</td>
+                                <td>Did not prepare for Q&A, unable to answer questions in their domain, relied entirely on others</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="do-dont-grid" style="margin-top: 2rem;">
+                <div class="do-card neuro-card">
+                    <div class="do-dont-title">
+                        <span class="do-icon">✓</span>
+                        <span>Fair Assessment Practices</span>
+                    </div>
+                    <ul class="example-list">
+                        <li>Evaluate objectively based on actual contribution</li>
+                        <li>Consider both quality and quantity of work</li>
+                        <li>Document specific examples if scoring below or above 3</li>
+                        <li>Assess your own contribution honestly</li>
+                        <li>Remember that different roles may require different effort levels</li>
+                        <li>Focus on contribution to final output, not just time spent</li>
+                    </ul>
+                </div>
+
+                <div class="dont-card neuro-card">
+                    <div class="do-dont-title">
+                        <span class="dont-icon">✗</span>
+                        <span>Unfair Assessment Practices</span>
+                    </div>
+                    <ul class="example-list">
+                        <li>Score everyone at 5 to "help the team" without justification</li>
+                        <li>Score based on personal relationships rather than contribution</li>
+                        <li>Penalize someone for having a different opinion during discussions</li>
+                        <li>Score without concrete evidence of contribution differences</li>
+                        <li>Use peer assessment as retaliation for conflicts</li>
+                        <li>Ignore significant contribution imbalances to avoid confrontation</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alert alert-warning" style="margin-top: 2rem;">
+                <div class="alert-title">Important Note on Comments</div>
+                <p>If you award someone a score other than 3 (including yourself), you must provide specific comments explaining why. This is especially important when scoring team members down. Vague or missing justifications undermine the credibility of peer assessments.</p>
+            </div>
+
+            <div class="card neuro-card" style="margin-top: 2rem;">
+                <h3 class="card-title" style="margin-bottom: 1rem;">Example Justifications</h3>
+                
+                <div style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px; margin-bottom: 1rem;">
+                    <h4 style="color: var(--secondary-blue); margin-bottom: 0.5rem;">Score 5 Example</h4>
+                    <p style="color: var(--text-secondary);">"[Name] took initiative as Board Liaison, coordinating all team meetings, ensuring deadlines were met, and creating the first draft of our strategic framework. They also led our practice sessions and provided substantive feedback that improved everyone's delivery. Their contribution was significantly above average."</p>
+                </div>
+
+                <div style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px; margin-bottom: 1rem;">
+                    <h4 style="color: var(--secondary-blue); margin-bottom: 0.5rem;">Score 3 Example</h4>
+                    <p style="color: var(--text-secondary);">"[Name] performed their role as CMO effectively, attending all meetings, completing assigned sections on time, and delivering their portion competently. Their contribution was consistent with the team average."</p>
+                </div>
+
+                <div style="padding: 1.5rem; background: var(--bg-light); border-radius: 12px;">
+                    <h4 style="color: #FF4757; margin-bottom: 0.5rem;">Score 2 Example</h4>
+                    <p style="color: var(--text-secondary);">"[Name] missed two key team meetings without notice, submitted their assigned analysis three days late, and did not participate in practice sessions. During the presentation, their delivery was underprepared. Their contribution was below the team average."</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <strong>Entrepreneurial Capital</strong> | University of Strathclyde Business School
+            </div>
+            <div class="footer-right">
+                Tutorial 7 - Formative Feedback Session | 2025
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Collapsible Toggle
+        function toggleCollapsible(element) {
+            const item = element.parentElement;
+            item.classList.toggle('active');
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add hover effects to cards
+        document.querySelectorAll('.neuro-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-4px)';
+                this.style.transition = 'transform 0.3s ease';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Initialize - ensure first section is visible
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('overview').classList.add('active');
+        });
+    </script>
+</body>
+</html>
